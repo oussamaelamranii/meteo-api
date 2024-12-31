@@ -20,7 +20,7 @@ class WeatherService
         $this->apiUrl = 'https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41'
             . '&current_weather=true&hourly=temperature_2m,relative_humidity_2m,precipitation'
             . '&daily=temperature_2m_max,temperature_2m_min,sunshine_duration'
-            . '&timezone=auto'; // Remplacez l'URL par celle que vous avez spécifiée
+            . '&timezone=auto';
     }
     public function getWeather(): array
     {

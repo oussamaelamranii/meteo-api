@@ -1,0 +1,84 @@
+{
+    "userID": "12345",
+    "userLocation": {
+      "country": "Morocco",
+      "region": "Rabat-Salé-Kénitra",
+      "city": "Rabat",
+      "address": "123 Green Street, Apartment 4B",
+      "coordinates": {
+        "X": 34.020882,
+        "Y": -6.841650
+      }
+    },
+    "farmlands": [
+      {
+        "farmID": "F001",
+        "coordinates": {
+          "X": 35.6895,
+          "Y": -3.9924,
+          "surface": "2.5 hectares",
+          "localisation": {
+            "country": "Morocco",
+            "region": "Oriental",
+            "city": "Oujda"
+          }
+        },
+        "plants": [
+          "Wheat",
+          "Barley",
+          "Olives"
+        ],
+        "humiditySensors": [
+          {
+            "capteurID": "C001",
+            "humidityValue": 45,
+            "coordinates": {
+                            "X": 35.6895,
+                            "Y": -3.9924
+                          }
+          },
+          {
+            "capteurID": "C002",
+            "humidityValue": 50
+          }
+        ]
+      },
+      {
+        "farmID": "F002",
+        "coordinates": {
+          "X": 36.7125,
+          "Y": -4.0523,
+          "surface": "1.8 hectares",
+          "localisation": {
+            "country": "Morocco",
+            "region": "Tanger-Tétouan-Al Hoceïma",
+            "city": "Tetouan"
+          }
+        },
+        "plants": [
+          "Tomatoes",
+          "Peppers"
+        ],
+        "humiditySensors": [
+          {
+            "capteurID": "C003",
+            "humidityValue": 60
+          },
+          {
+            "capteurID": "C004",
+            "humidityValue": 55
+          },
+          {
+            "capteurID": "C005",
+            "humidityValue": 62
+          }
+        ]
+      }
+    ],
+    "housePlants": [
+      "Basil",
+      "Aloe Vera",
+      "Orchid"
+    ]
+  }
+  
