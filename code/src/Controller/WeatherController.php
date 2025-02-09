@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Service\WeatherService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class WeatherController extends AbstractController
@@ -20,12 +19,13 @@ class WeatherController extends AbstractController
     #[Route('/weather', name: 'get_weather', methods: ['GET'])]
     public function getWeather(): JsonResponse
     {
-        try {
-            $data = $this->weatherService->getWeather();
-            return new JsonResponse($data, JsonResponse::HTTP_OK);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+        $weather = $this->weatherService->getWeather();
+        if(empty($weather))
+        {
+            return new JsonResponse(['error' => 'Weather not found'], 404);
+            //return new JsonResponse(['error' => 'Weather not found'], Response::HTTP_NOT_FOUND);
         }
+        return new JsonResponse($weather);
     }
 
 }

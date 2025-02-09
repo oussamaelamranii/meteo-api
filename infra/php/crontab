@@ -1,0 +1,1 @@
+0 6,18 * * * root /usr/bin/php /var/www/html/bin/console app:update-weather-cache >> /var/www/html/var/log/cron.log 2>&1
