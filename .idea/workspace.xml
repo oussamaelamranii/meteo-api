@@ -1,16 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="MessDetectorOptionsConfiguration">
-    <option name="transferred" value="true" />
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
   </component>
-  <component name="PHPCSFixerOptionsConfiguration">
-    <option name="transferred" value="true" />
+  <component name="ChangeListManager">
+    <list default="true" id="a958974a-bee7-427e-9d2b-760d0efe8e37" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/code/src/Controller/WeatherCacheController.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/code/src/Service/CacheService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/.env" beforeDir="false" afterPath="$PROJECT_DIR$/code/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/config/packages/cache.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/code/config/packages/cache.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/src/Command/FetchWeatherDataCommand.php" beforeDir="false" afterPath="$PROJECT_DIR$/code/src/Command/FetchWeatherDataCommand.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/src/Controller/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/src/Service/WeatherService.php" beforeDir="false" afterPath="$PROJECT_DIR$/code/src/Service/WeatherService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/compose.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/infra/php/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/infra/php/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/infra/php/crontab" beforeDir="false" afterPath="$PROJECT_DIR$/infra/php/crontab" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="PHPCodeSnifferOptionsConfiguration">
-    <option name="highlightLevel" value="WARNING" />
-    <option name="transferred" value="true" />
+  <component name="ComposerSettings" synchronizationState="SYNCHRONIZE">
+    <pharConfigPath>$PROJECT_DIR$/code/composer.json</pharConfigPath>
+    <execution />
   </component>
-  <component name="PhpIncludePathManager">
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="C:\xampp\php\php.exe">
     <include_path>
       <path value="$PROJECT_DIR$/vendor/psr/clock" />
       <path value="$PROJECT_DIR$/vendor/psr/link" />
@@ -203,16 +221,56 @@
       <path value="$PROJECT_DIR$/code/vendor/symfony/process" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />
-  <component name="PhpStanOptionsConfiguration">
-    <option name="transferred" value="true" />
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2sfwEP785BS4DZbKiiD5D1Ji7xc" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PhpUnit">
-    <phpunit_settings>
-      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/code/vendor/autoload.php" />
-    </phpunit_settings>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.fileTypes&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PS-242.23726.107" />
+        <option value="bundled-php-predefined-a98d8de5180a-90914f2295cb-com.jetbrains.php.sharedIndexes-PS-242.23726.107" />
+      </set>
+    </attachedChunks>
   </component>
-  <component name="PsalmOptionsConfiguration">
-    <option name="transferred" value="true" />
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a958974a-bee7-427e-9d2b-760d0efe8e37" name="Changes" comment="" />
+      <created>1738859834665</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1738859834665</updated>
+      <workItem from="1738859836595" duration="443000" />
+      <workItem from="1738860857709" duration="4635000" />
+      <workItem from="1739040108852" duration="17340000" />
+      <workItem from="1739114464599" duration="9861000" />
+      <workItem from="1739393940039" duration="17682000" />
+      <workItem from="1739466849523" duration="14664000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
   </component>
 </project>
