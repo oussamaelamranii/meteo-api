@@ -42,7 +42,7 @@ services:
   redis-commander:
     image: rediscommander/redis-commander:latest
     environment:
-      - REDIS_HOSTs=local:redis:6379
+      - REDIS_HOSTS=local:redis:6379
     ports:
       - "8083:8081"
     networks:

@@ -2,17 +2,11 @@
 
 namespace App\Service;
 
-use Psr\Log\LoggerInterface;
-use Symfony\Contracts\Cache\CacheInterface;
-
-use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class WeatherService
 {
     private HttpClientInterface $client;
-    private CacheInterface $cache;
-    private LoggerInterface $logger;
     private string $apiUrl;
 
     public function __construct(HttpClientInterface $client)
@@ -34,22 +28,4 @@ class WeatherService
         return $response->toArray();
     }
 
-    public function storeWeatherInCache(): void
-    {
-        $weather = $this->getWeather();
-
-        $this->cache->get('cache_weather', function(ItemInterface $item) use ($weather)
-        {
-            $item->expiresAfter(12 * 3600);
-            return $weather;
-        });
-    }
-
-    public function getWeatherFomCache(): array
-    {
-        return $this->cache->get('cache_weather', function(ItemInterface $item)
-        {
-            return null;
-        });
-    }
 }
