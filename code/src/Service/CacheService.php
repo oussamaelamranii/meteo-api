@@ -22,9 +22,9 @@ class CacheService
     public function storeWeatherInCache(): void
     {
         try {
-            $weather = $this->weatherService->getWeather();
 
-            $this->cache->get('cache_weather', function(ItemInterface $item) use ($weather) {
+            $this->cache->get('cache_weather', function(ItemInterface $item){
+                $weather = $this->weatherService->getWeather();
                 $item->expiresAfter(12 * 3600);
                 return $weather;
             });
