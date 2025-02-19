@@ -19,14 +19,20 @@ class WeatherCacheController extends AbstractController
     #[Route('/weather-cache', name: 'weather_cache', methods: ['GET'])]
     public function getWeatherCache(): JsonResponse
     {
+        //$this->cacheService->storeWeatherInCache();
         $weatherData = $this->cacheService->getWeatherFromCache();
 
         if(empty($weatherData))
         {
-            return $this->json([
-                'status' => 404,
-                'error' => 'les donnees ne sont pas disponibles dans le cache'
-            ], 404);
+            $this->cacheService->storeWeatherInCache();
+            $weatherData = $this->cacheService->getWeatherFromCache();
+            if(empty($weatherData))
+            {
+                return $this->json([
+                    'status' => 404,
+                    'error' => 'les donnees ne sont pas disponibles dans le cache'
+                ], 404);
+            }
         }
 
         return $this->json($weatherData);

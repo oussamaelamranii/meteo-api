@@ -22,12 +22,16 @@ class CacheService
     public function storeWeatherInCache(): void
     {
         try {
+            $weather = $this->weatherService->getWeather();
+            if(empty($weather))
+            {
+                throw new \Exception("aucune donnee meteo recuperee");
+            }
+            $cacheItem = $this->cache->getItem('cache_weather');
+            $cacheItem->set($weather);
+            $cacheItem->expiresAfter(12 * 3600);
+            $this->cache->save($cacheItem);
 
-            $this->cache->get('cache_weather', function(ItemInterface $item){
-                $weather = $this->weatherService->getWeather();
-                $item->expiresAfter(12 * 3600);
-                return $weather;
-            });
             $this->logger->info("donnees meteo stockees dans le cache : ");
 
         } catch (\Exception $e) {
@@ -41,5 +45,4 @@ class CacheService
             return null;
         });
     }
-
 }
