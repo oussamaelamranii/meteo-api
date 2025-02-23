@@ -15,7 +15,6 @@ class WeatherController extends AbstractController
     {
         $this->weatherService = $weatherService;
     }
-
     #[Route('/weather', name: 'get_weather', methods: ['GET'])]
     public function getWeather(): JsonResponse
     {
@@ -27,5 +26,4 @@ class WeatherController extends AbstractController
         }
         return new JsonResponse($weather);
     }
-
 }
