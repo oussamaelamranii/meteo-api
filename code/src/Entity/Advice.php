@@ -20,10 +20,16 @@ class Advice
     private ?int $user_plant_id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $advice_text = null;
+    private ?string $advice_text_en = null;
 
     #[ORM\Column(type: 'datetime_immutable', options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $advice_text_fr = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $advice_text_ar = null;
 
     public function getId(): ?int
     {
@@ -49,14 +55,14 @@ class Advice
         return $this;
     }
 
-    public function getAdviceText(): ?string
+    public function getAdviceTextEn(): ?string
     {
-        return $this->advice_text;
+        return $this->advice_text_en;
     }
 
-    public function setAdviceText(string $advice_text): static
+    public function setAdviceTextEn(string $advice_text_en): static
     {
-        $this->advice_text = $advice_text;
+        $this->advice_text_en = $advice_text_en;
 
         return $this;
     }
@@ -69,6 +75,30 @@ class Advice
     public function setCreatedAt(\DateTimeImmutable $created_at): static
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getAdviceTextFr(): ?string
+    {
+        return $this->advice_text_fr;
+    }
+
+    public function setAdviceTextFr(string $advice_text_fr): static
+    {
+        $this->advice_text_fr = $advice_text_fr;
+
+        return $this;
+    }
+
+    public function getAdviceTextAr(): ?string
+    {
+        return $this->advice_text_ar;
+    }
+
+    public function setAdviceTextAr(string $advice_text_ar): static
+    {
+        $this->advice_text_ar = $advice_text_ar;
 
         return $this;
     }

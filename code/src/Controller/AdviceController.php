@@ -34,7 +34,9 @@ class AdviceController extends AbstractController{
             $data[] = [
                 'id' => $ad->getId(),
                 'user_plant_id' => $ad->getUserPlantId(),
-                'AdviceText' => $ad->getAdviceText(),
+                'advice_text_en' => $ad->getAdviceTextEn(),
+                'advice_text_fr' => $ad->getAdviceTextFr(),
+                'advice_text_ar' => $ad->getAdviceTextAr(),
                 'CreatedAt' => $ad->getCreatedAt(),
             ];
         }
@@ -56,7 +58,7 @@ class AdviceController extends AbstractController{
     }
 
 
-    // Create a new adv
+    // Create a new advive
     #[Route("", methods: ["POST"])]
     public function create(Request $request): JsonResponse
     {
@@ -70,7 +72,10 @@ class AdviceController extends AbstractController{
 
         $advice = new Advice();
         $advice->setUserPlantId($data['user_plant_id']);
-        $advice->setAdviceText($data['advice_text']);
+        $advice->setAdviceTextEn($data['advice_text_en'] ?? null);
+        $advice->setAdviceTextFr($data['advice_text_fr'] ?? null);
+        $advice->setAdviceTextAr($data['advice_text_ar'] ?? null);
+
 
         // Convert string to DateTimeImmutable
         $createdAt = isset($data['created_at']) ? new \DateTimeImmutable($data['created_at']) : new \DateTimeImmutable();
@@ -82,12 +87,14 @@ class AdviceController extends AbstractController{
         return $this->json([
             'id' => $advice->getId(),
             'user_plant_id' => $advice->getUserPlantId(),
-            'advice_text' => $advice->getAdviceText(),
+            'advice_text_en' => $advice->getAdviceTextEn(),
+            'advice_text_fr' => $advice->getAdviceTextFr(),
+            'advice_text_ar' => $advice->getAdviceTextAr(),
             'created_at' => $advice->getCreatedAt()->format('Y-m-d H:i:s'),
         ]);
     }
 
-    // ✅ UPDATE Advice
+    // UPDATE Advice
     #[Route("/{id}", methods: ["PUT"])]
     public function update(int $id, Request $request): JsonResponse
     {
@@ -104,9 +111,16 @@ class AdviceController extends AbstractController{
         if (isset($data['user_plant_id'])) {
             $advice->setUserPlantId($data['user_plant_id']);
         }
-        if (isset($data['advice_text'])) {
-            $advice->setAdviceText($data['advice_text']);
+        if (isset($data['advice_text_en'])) {
+            $advice->setAdviceTextEn($data['advice_text_en']);
         }
+        if (isset($data['advice_text_fr'])) {
+            $advice->setAdviceTextFr($data['advice_text_fr']);
+        }
+        if (isset($data['advice_text_ar'])) {
+            $advice->setAdviceTextAr($data['advice_text_ar']);
+        }
+        
         if (isset($data['created_at'])) {
             $advice->setCreatedAt(new \DateTimeImmutable($data['created_at']));
         }
@@ -118,7 +132,7 @@ class AdviceController extends AbstractController{
 
 
 
-    // ✅ DELETE Advice
+    // DELETE Advice
     #[Route("/{id}", methods: ["DELETE"])]
     public function delete(int $id): JsonResponse
     {
