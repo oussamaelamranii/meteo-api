@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Advice;
+use App\Service\TranslationService;
 use App\Repository\AdviceRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,10 +18,12 @@ class AdviceController extends AbstractController{
     
     private $repo;
     private $em;
+    private $translator;
 
-    public function __construct(AdviceRepository $repo_ , EntityManagerInterface $em_) {
+    public function __construct(AdviceRepository $repo_ , EntityManagerInterface $em_, TranslationService $translator) {
         $this->repo = $repo_;
         $this->em = $em_;
+        $this->translator = $translator;
     }
 
     // Get all plants
@@ -72,9 +75,19 @@ class AdviceController extends AbstractController{
 
         $advice = new Advice();
         $advice->setUserPlantId($data['user_plant_id']);
-        $advice->setAdviceTextEn($data['advice_text_en'] ?? null);
-        $advice->setAdviceTextFr($data['advice_text_fr'] ?? null);
-        $advice->setAdviceTextAr($data['advice_text_ar'] ?? null);
+
+        if (!empty($data['advice_text_en'])) {
+            
+            //? translation
+            $translatedDarija = $this->translator->translateToDarija($data['advice_text_en']);
+            $translatedFrench = $this->translator->translateToFrench($data['advice_text_en']);
+            
+            $advice->setAdviceTextEn($data['advice_text_en'] ?? null);
+            $advice->setAdviceTextAr($translatedDarija);
+            $advice->setAdviceTextFr($translatedFrench);
+        }
+        // $advice->setAdviceTextFr($data['advice_text_fr'] ?? null);
+        // $advice->setAdviceTextAr($data['advice_text_ar'] ?? null);
 
 
         // Convert string to DateTimeImmutable
@@ -111,15 +124,26 @@ class AdviceController extends AbstractController{
         if (isset($data['user_plant_id'])) {
             $advice->setUserPlantId($data['user_plant_id']);
         }
+
         if (isset($data['advice_text_en'])) {
             $advice->setAdviceTextEn($data['advice_text_en']);
+    
+            // Translate to Moroccan Darija and French
+            $translatedDarija = $this->translator->translateToDarija($data['advice_text_en']);
+            $translatedFrench = $this->translator->translateToFrench($data['advice_text_en']);
+    
+            $advice->setAdviceTextAr($translatedDarija);
+            $advice->setAdviceTextFr($translatedFrench);
         }
-        if (isset($data['advice_text_fr'])) {
-            $advice->setAdviceTextFr($data['advice_text_fr']);
-        }
-        if (isset($data['advice_text_ar'])) {
-            $advice->setAdviceTextAr($data['advice_text_ar']);
-        }
+
+    //im keep this to allow manual modification without needing translation service
+    if (isset($data['advice_text_ar'])) {
+        $advice->setAdviceTextAr($data['advice_text_ar']);
+    }
+
+    if (isset($data['created_at'])) {
+        $advice->setCreatedAt(new \DateTimeImmutable($data['created_at']));
+    }
         
         if (isset($data['created_at'])) {
             $advice->setCreatedAt(new \DateTimeImmutable($data['created_at']));
