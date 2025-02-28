@@ -31,6 +31,9 @@ class Advice
     #[ORM\Column(type: Types::TEXT)]
     private ?string $advice_text_ar = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $AudioPath = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -99,6 +102,18 @@ class Advice
     public function setAdviceTextAr(string $advice_text_ar): static
     {
         $this->advice_text_ar = $advice_text_ar;
+
+        return $this;
+    }
+
+    public function getAudioPath(): ?string
+    {
+        return $this->AudioPath;
+    }
+
+    public function setAudioPath(string $AudioPath): static
+    {
+        $this->AudioPath = $AudioPath;
 
         return $this;
     }

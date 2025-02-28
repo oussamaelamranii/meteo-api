@@ -12,12 +12,12 @@ class TranslationService
     public function __construct(HttpClientInterface $client)
     {
         $this->client = $client;
-        $this->apiKey = $_ENV['OPENAI_API_KEY']; // Store API key in .env file
+        $this->apiKey = $_ENV['OPENAI_API_KEY']; 
     }
 
     public function translateToDarija(string $text): string
     {
-        $response = $this->client->request('POST', 'https://api.openai.com/v1/chat/completions', [
+        $response = $this->client->request('POST', $_ENV['OPENAI_API_URL'], [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->apiKey,
                 'Content-Type' => 'application/json',
