@@ -2,9 +2,10 @@
 
 namespace App\Service;
 
+use App\Interface\TTSServiceInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class TTSService
+class TTSService implements TTSServiceInterface
 {
     private $client;
     private $apiKey;

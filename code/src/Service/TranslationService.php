@@ -2,9 +2,10 @@
 
 namespace App\Service;
 
+use App\Interface\TranslationServiceInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class TranslationService
+class TranslationService implements TranslationServiceInterface
 {
     private $client;
     private $apiKey;
