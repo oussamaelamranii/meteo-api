@@ -57,6 +57,8 @@
 # Build data
 /build/
 
+.env
+
 # Composer PHAR
 /composer.phar
 

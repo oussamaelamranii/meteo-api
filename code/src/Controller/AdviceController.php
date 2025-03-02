@@ -3,10 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Advice;
-use App\Service\TranslationService;
+use App\Interface\TranslationServiceInterface;
+use App\Interface\TTSServiceInterface;
 use App\Repository\AdviceRepository;
-use App\Service\TTSService;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,7 +21,7 @@ class AdviceController extends AbstractController{
     private $translator;
     private $tts;
 
-    public function __construct(AdviceRepository $repo_ , EntityManagerInterface $em_, TranslationService $translator , TTSService $tts) {
+    public function __construct(AdviceRepository $repo_ , EntityManagerInterface $em_, TranslationServiceInterface $translator , TTSServiceInterface $tts) {
         $this->repo = $repo_;
         $this->em = $em_;
         $this->translator = $translator;
@@ -35,19 +34,7 @@ class AdviceController extends AbstractController{
     {
         $advices = $this->repo->findAll();
 
-        $data = [];
-        foreach ($advices as $ad) {
-            $data[] = [
-                'id' => $ad->getId(),
-                'user_plant_id' => $ad->getUserPlantId(),
-                'advice_text_en' => $ad->getAdviceTextEn(),
-                'advice_text_fr' => $ad->getAdviceTextFr(),
-                'advice_text_ar' => $ad->getAdviceTextAr(),
-                'CreatedAt' => $ad->getCreatedAt(),
-            ];
-        }
-
-        return $this->json($data);
+        return $this->json($advices);
     }
 
     // READ (GET SINGLE Advice)
