@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 class JsonController extends AbstractController
+
 {
     #[Route('/json-test', name: 'json_test')]
     public function testJson(): JsonResponse

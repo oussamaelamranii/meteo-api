@@ -3,8 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Advice;
+use App\Interface\TranslationServiceInterface;
+use App\Interface\TTSServiceInterface;
 use App\Repository\AdviceRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,10 +18,14 @@ class AdviceController extends AbstractController{
     
     private $repo;
     private $em;
+    private $translator;
+    private $tts;
 
-    public function __construct(AdviceRepository $repo_ , EntityManagerInterface $em_) {
+    public function __construct(AdviceRepository $repo_ , EntityManagerInterface $em_, TranslationServiceInterface $translator , TTSServiceInterface $tts) {
         $this->repo = $repo_;
         $this->em = $em_;
+        $this->translator = $translator;
+        $this->tts = $tts;
     }
 
     // Get all plants
@@ -29,17 +34,7 @@ class AdviceController extends AbstractController{
     {
         $advices = $this->repo->findAll();
 
-        $data = [];
-        foreach ($advices as $ad) {
-            $data[] = [
-                'id' => $ad->getId(),
-                'user_plant_id' => $ad->getUserPlantId(),
-                'AdviceText' => $ad->getAdviceText(),
-                'CreatedAt' => $ad->getCreatedAt(),
-            ];
-        }
-
-        return $this->json($data);
+        return $this->json($advices);
     }
 
     // READ (GET SINGLE Advice)
@@ -56,7 +51,7 @@ class AdviceController extends AbstractController{
     }
 
 
-    // Create a new adv
+    // Create a new advive
     #[Route("", methods: ["POST"])]
     public function create(Request $request): JsonResponse
     {
@@ -70,7 +65,25 @@ class AdviceController extends AbstractController{
 
         $advice = new Advice();
         $advice->setUserPlantId($data['user_plant_id']);
-        $advice->setAdviceText($data['advice_text']);
+
+        if (!empty($data['advice_text_en'])) {
+            
+            //? translation
+            $translatedDarija = $this->translator->translateToDarija($data['advice_text_en']);
+            $translatedFrench = $this->translator->translateToFrench($data['advice_text_en']);
+
+            //? TTSing here
+            $AudioPath = $this->tts->getAudio($translatedDarija);
+            
+            $advice->setAudioPath($AudioPath);
+
+            $advice->setAdviceTextEn($data['advice_text_en'] ?? null);
+            $advice->setAdviceTextAr($translatedDarija);
+            $advice->setAdviceTextFr($translatedFrench);
+        }
+        // $advice->setAdviceTextFr($data['advice_text_fr'] ?? null);
+        // $advice->setAdviceTextAr($data['advice_text_ar'] ?? null);
+
 
         // Convert string to DateTimeImmutable
         $createdAt = isset($data['created_at']) ? new \DateTimeImmutable($data['created_at']) : new \DateTimeImmutable();
@@ -82,12 +95,15 @@ class AdviceController extends AbstractController{
         return $this->json([
             'id' => $advice->getId(),
             'user_plant_id' => $advice->getUserPlantId(),
-            'advice_text' => $advice->getAdviceText(),
+            'advice_text_en' => $advice->getAdviceTextEn(),
+            'advice_text_fr' => $advice->getAdviceTextFr(),
+            'advice_text_ar' => $advice->getAdviceTextAr(),
+            'AudioPath' => $advice->getAudioPath(),
             'created_at' => $advice->getCreatedAt()->format('Y-m-d H:i:s'),
         ]);
     }
 
-    // ✅ UPDATE Advice
+    // UPDATE Advice
     #[Route("/{id}", methods: ["PUT"])]
     public function update(int $id, Request $request): JsonResponse
     {
@@ -104,9 +120,32 @@ class AdviceController extends AbstractController{
         if (isset($data['user_plant_id'])) {
             $advice->setUserPlantId($data['user_plant_id']);
         }
-        if (isset($data['advice_text'])) {
-            $advice->setAdviceText($data['advice_text']);
+
+        if (isset($data['advice_text_en'])) {
+            $advice->setAdviceTextEn($data['advice_text_en']);
+    
+            //? Translate to Moroccan Darija and French
+            $translatedDarija = $this->translator->translateToDarija($data['advice_text_en']);
+            $translatedFrench = $this->translator->translateToFrench($data['advice_text_en']);
+
+            //? TTSing here
+            $AudioPath = $this->tts->getAudio($translatedDarija);
+            
+            $advice->setAudioPath($AudioPath);
+    
+            $advice->setAdviceTextAr($translatedDarija);
+            $advice->setAdviceTextFr($translatedFrench);
         }
+
+    //im keep this to allow manual modification without needing translation service
+    if (isset($data['advice_text_ar'])) {
+        $advice->setAdviceTextAr($data['advice_text_ar']);
+    }
+
+    if (isset($data['created_at'])) {
+        $advice->setCreatedAt(new \DateTimeImmutable($data['created_at']));
+    }
+        
         if (isset($data['created_at'])) {
             $advice->setCreatedAt(new \DateTimeImmutable($data['created_at']));
         }
@@ -118,7 +157,7 @@ class AdviceController extends AbstractController{
 
 
 
-    // ✅ DELETE Advice
+    // DELETE Advice
     #[Route("/{id}", methods: ["DELETE"])]
     public function delete(int $id): JsonResponse
     {

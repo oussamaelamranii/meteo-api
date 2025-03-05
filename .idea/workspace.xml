@@ -8,6 +8,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/.env" beforeDir="false" afterPath="$PROJECT_DIR$/code/.env" afterDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/code/FakeJSON.json" beforeDir="false" afterPath="$PROJECT_DIR$/code/FakeJSON.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/code/composer.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/code/composer.lock" afterDir="false" />
@@ -17,20 +18,29 @@
       <change beforePath="$PROJECT_DIR$/code/src/Controller/WeatherController.php" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/code/src/Service/WeatherService.php" beforeDir="false" afterPath="$PROJECT_DIR$/code/src/Service/WeatherService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/infra/php/crontab" beforeDir="false" afterPath="$PROJECT_DIR$/infra/php/crontab" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/code/src/Command/FetchWeatherDataCommand.php" beforeDir="false" afterPath="$PROJECT_DIR$/code/src/Command/FetchWeatherDataCommand.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/src/Service/CacheService.php" beforeDir="false" afterPath="$PROJECT_DIR$/code/src/Service/CacheService.php" afterDir="false" />
+>>>>>>> 1421c41df0e453d3d463b1da2df62823798c4ddb
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="ComposerConfigs">
+    <option name="configs">
+      <option value="$PROJECT_DIR$/code/composer.json" />
+    </option>
+  </component>
   <component name="ComposerSettings" synchronizationState="SYNCHRONIZE">
-    <pharConfigPath>$PROJECT_DIR$/code/composer.json</pharConfigPath>
+    <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
     <execution />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="C:\xampp\php\php.exe">
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="C:\php-8.4.1\php.exe">
     <include_path>
       <path value="$PROJECT_DIR$/vendor/psr/clock" />
       <path value="$PROJECT_DIR$/vendor/psr/link" />
@@ -236,7 +246,9 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/BIGs/Desktop/Meteo_api&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
@@ -248,8 +260,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PS-242.23726.107" />
-        <option value="bundled-php-predefined-a98d8de5180a-90914f2295cb-com.jetbrains.php.sharedIndexes-PS-242.23726.107" />
+        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-PS-243.22562.233" />
+        <option value="bundled-php-predefined-a98d8de5180a-7980c7aaca61-com.jetbrains.php.sharedIndexes-PS-243.22562.233" />
       </set>
     </attachedChunks>
   </component>
@@ -267,6 +279,7 @@
       <workItem from="1739114464599" duration="9861000" />
       <workItem from="1739393940039" duration="17682000" />
       <workItem from="1739466849523" duration="15324000" />
+<<<<<<< HEAD
       <workItem from="1739489578455" duration="1916000" />
       <workItem from="1739499501700" duration="3918000" />
       <workItem from="1739605170089" duration="642000" />
@@ -280,6 +293,9 @@
       <workItem from="1740928658468" duration="31142000" />
       <workItem from="1741149226190" duration="4000" />
       <workItem from="1741194709620" duration="945000" />
+=======
+      <workItem from="1739489578455" duration="1363000" />
+>>>>>>> 1421c41df0e453d3d463b1da2df62823798c4ddb
     </task>
     <servers />
   </component>
