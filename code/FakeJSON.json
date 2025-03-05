@@ -1,84 +1,184 @@
 {
-    "userID": "12345",
-    "userLocation": {
-      "country": "Morocco",
-      "region": "Rabat-Salé-Kénitra",
-      "city": "Rabat",
-      "address": "123 Green Street, Apartment 4B",
-      "coordinates": {
-        "X": 34.020882,
-        "Y": -6.841650
-      }
-    },
-    "farmlands": [
-      {
-        "farmID": "F001",
+  "users": [
+    {
+      "userID": "12345",
+      "userLocation": {
+        "country": "Morocco",
+        "region": "Rabat-Salé-Kénitra",
+        "city": "Rabat",
+        "address": "123 Green Street, Apartment 4B",
         "coordinates": {
-          "X": 35.6895,
-          "Y": -3.9924,
+          "X": 34.020882,
+          "Y": -6.841650
+        }
+      },
+      "farmlands": [
+        {
+          "farmID": "F001",
+          "coordinates": {
+            "X": 35.6895,
+            "Y": -3.9924
+          },
           "surface": "2.5 hectares",
           "localisation": {
             "country": "Morocco",
             "region": "Oriental",
             "city": "Oujda"
-          }
-        },
-        "plants": [
-          "Wheat",
-          "Barley",
-          "Olives"
-        ],
-        "humiditySensors": [
-          {
-            "capteurID": "C001",
-            "humidityValue": 45,
-            "coordinates": {
-                            "X": 35.6895,
-                            "Y": -3.9924
-                          }
           },
-          {
-            "capteurID": "C002",
-            "humidityValue": 50
-          }
-        ]
-      },
-      {
-        "farmID": "F002",
+          "plants": ["Wheat", "Barley", "Olives"],
+          "humiditySensors": [
+            {
+              "capteurID": "C001",
+              "humidityValue": 45,
+              "coordinates": {
+                "X": 35.6895,
+                "Y": -3.9924
+              }
+            },
+            {
+              "capteurID": "C002",
+              "humidityValue": 50
+            }
+          ]
+        }
+      ],
+      "housePlants": ["Basil", "Aloe Vera", "Orchid"]
+    },
+    {
+      "userID": "67890",
+      "userLocation": {
+        "country": "France",
+        "region": "Île-de-France",
+        "city": "Paris",
+        "address": "45 Rue de Rivoli, Apartment 2A",
         "coordinates": {
-          "X": 36.7125,
-          "Y": -4.0523,
-          "surface": "1.8 hectares",
+          "X": 48.8566,
+          "Y": 2.3522
+        }
+      },
+      "farmlands": [
+        {
+          "farmID": "F003",
+          "coordinates": {
+            "X": 49.1234,
+            "Y": 2.5678
+          },
+          "surface": "3 hectares",
+          "localisation": {
+            "country": "France",
+            "region": "Hauts-de-France",
+            "city": "Beauvais"
+          },
+          "plants": ["Grapes", "Lavender", "Sunflowers"],
+          "humiditySensors": [
+            {
+              "capteurID": "C006",
+              "humidityValue": 55,
+              "coordinates": {
+                "X": 49.1234,
+                "Y": 2.5678
+              }
+            },
+            {
+              "capteurID": "C007",
+              "humidityValue": 60
+            }
+          ]
+        }
+      ],
+      "housePlants": ["Rosemary", "Mint", "Fern"]
+    },
+    {
+      "userID": "24680",
+      "userLocation": {
+        "country": "USA",
+        "region": "California",
+        "city": "Los Angeles",
+        "address": "789 Sunset Blvd, Apartment 5C",
+        "coordinates": {
+          "X": 34.0522,
+          "Y": -118.2437
+        }
+      },
+      "farmlands": [
+        {
+          "farmID": "F004",
+          "coordinates": {
+            "X": 35.1234,
+            "Y": -119.5678
+          },
+          "surface": "5 hectares",
+          "localisation": {
+            "country": "USA",
+            "region": "California",
+            "city": "Bakersfield"
+          },
+          "plants": ["Avocados", "Oranges", "Strawberries"],
+          "humiditySensors": [
+            {
+              "capteurID": "C008",
+              "humidityValue": 40,
+              "coordinates": {
+                "X": 35.1234,
+                "Y": -119.5678
+              }
+            },
+            {
+              "capteurID": "C009",
+              "humidityValue": 47
+            },
+            {
+              "capteurID": "C010",
+              "humidityValue": 50
+            }
+          ]
+        }
+      ],
+      "housePlants": ["Cactus", "Snake Plant", "Lavender"]
+    },
+    {
+      "userID": "12345",
+      "userLocation": {
+        "country": "Morocco",
+        "region": "Rabat-Salé-Kénitra",
+        "city": "Rabat",
+        "address": "123 Green Street, Apartment 4B",
+        "coordinates": {
+          "X": 34.020882,
+          "Y": -6.841650
+        }
+      },
+      "farmlands": [
+        {
+          "farmID": "F001",
+          "coordinates": {
+            "X": 35.6895,
+            "Y": -3.9924
+          },
+          "surface": "2.5 hectares",
           "localisation": {
             "country": "Morocco",
-            "region": "Tanger-Tétouan-Al Hoceïma",
-            "city": "Tetouan"
-          }
-        },
-        "plants": [
-          "Tomatoes",
-          "Peppers"
-        ],
-        "humiditySensors": [
-          {
-            "capteurID": "C003",
-            "humidityValue": 60
+            "region": "Oriental",
+            "city": "Oujda"
           },
-          {
-            "capteurID": "C004",
-            "humidityValue": 55
-          },
-          {
-            "capteurID": "C005",
-            "humidityValue": 62
-          }
-        ]
-      }
-    ],
-    "housePlants": [
-      "Basil",
-      "Aloe Vera",
-      "Orchid"
-    ]
-  }
-  
+          "plants": ["Wheat", "Barley", "Olives"],
+          "humiditySensors": [
+            {
+              "capteurID": "C001",
+              "humidityValue": 45,
+              "coordinates": {
+                "X": 35.6895,
+                "Y": -3.9924
+              }
+            },
+            {
+              "capteurID": "C002",
+              "humidityValue": 50
+            }
+          ]
+        }
+      ],
+      "housePlants": ["Basil", "Aloe Vera", "Orchid"]
+    }
+  ]
+}

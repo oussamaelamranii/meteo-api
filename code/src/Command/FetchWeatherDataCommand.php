@@ -8,6 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 #[AsCommand(
     name: 'app:update-weather-cache',
@@ -33,10 +34,17 @@ class FetchWeatherDataCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        try {
 
-        $this->cacheService->storeWeatherInCache();
-        $io->success('Weather data cache successfully updated Mr ayman!');
+            $this->cacheService->storeWeatherInCache();
 
-        return Command::SUCCESS;
+            $date = new \DateTimeImmutable();
+            $io->success(sprintf('Weather data cache successfully updated Mr ayman! on: %s', $date->format('Y-m-d H:i:s')));
+            //$io->success("Weather data cache successfully updated Mr ayman!");
+            return Command::SUCCESS;
+        }catch (\Exception $exception){
+            $io->error("Weather data cache failed updated Mr ayman!");
+            return Command::FAILURE;
+        }
     }
 }
