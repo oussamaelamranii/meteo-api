@@ -3,11 +3,14 @@
 namespace App\Entity;
 
 use App\Enum\GrowthStage;
-use App\Repository\UserPlantsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\LandPlantsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
-#[ORM\Entity(repositoryClass: UserPlantsRepository::class)]
-class UserPlants
+
+#[ORM\Entity(repositoryClass: LandPlantsRepository::class)]
+class LandPlants
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -15,12 +18,29 @@ class UserPlants
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $user_id = null;
+    #[ORM\ManyToOne(targetEntity: Land::class, inversedBy: 'userPlants')]
+    #[ORM\JoinColumn(name: 'land_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    private ?int $land_id = null;
 
     #[ORM\Column]
     #[ORM\ManyToMany(targetEntity: Plants::class, inversedBy: 'plants')]
     #[ORM\JoinColumn(name: 'plant_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     private ?int $plant_id = null;
+
+    #[ORM\OneToMany(mappedBy: "landPlant", targetEntity: Advice::class, cascade: ["persist", "remove"])]
+    private Collection $advices;
+
+    public function __construct()
+    {
+        $this->advices = new ArrayCollection();
+    }
+
+    public function getAdvices(): Collection
+    {
+        return $this->advices;
+    }
+
+    //! should we move current_temp ?? yes / put DTO
 
     #[ORM\Column]
     private ?float $current_temp = null;
@@ -37,7 +57,27 @@ class UserPlants
     #[ORM\Column(type: 'datetime_immutable', options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeImmutable $last_updated = null;
 
-    
+
+//!===================================
+    #[ORM\ManyToOne(targetEntity:Plants::class, inversedBy:"landPlants")]
+    #[ORM\JoinColumn(name:"plant_id", referencedColumnName:"id", onDelete:"CASCADE")]
+
+    private ?Plants $plant = null;
+
+    // Getter and setter for the plant relation
+    public function getPlant(): ?Plants
+    {
+        return $this->plant;
+    }
+
+    public function setPlant(?Plants $plant): self
+    {
+        $this->plant = $plant;
+
+        return $this;
+    }
+//!===================================
+
 
     public function getId(): ?int
     {
@@ -51,17 +91,6 @@ class UserPlants
         return $this;
     }
 
-    public function getUserId(): ?int
-    {
-        return $this->user_id;
-    }
-
-    public function setUserId(int $user_id): static
-    {
-        $this->user_id = $user_id;
-
-        return $this;
-    }
 
     public function getPlantId(): ?int
     {
@@ -131,6 +160,18 @@ class UserPlants
     public function setLastUpdated(\DateTimeImmutable $last_updated): static
     {
         $this->last_updated = $last_updated;
+
+        return $this;
+    }
+
+    public function getLandId(): ?int
+    {
+        return $this->land_id;
+    }
+
+    public function setLandId(int $land_id): static
+    {
+        $this->land_id = $land_id;
 
         return $this;
     }

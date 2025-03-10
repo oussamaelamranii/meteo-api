@@ -4,9 +4,9 @@ namespace App\Enum;
 
 enum SunlightRequirement: string
 {
-    case FULL_SUN = 'full sun';
-    case PARTIAL_SHADE = 'partial shade';
-    case SHADE = 'shade';
+    case FULL_SUN = 'Full Sun';
+    case PARTIAL_SHADE = 'Partial Shade';
+    case SHADE = 'Shade';
 
     public function label(): string
     {

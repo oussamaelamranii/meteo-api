@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Advice;
+use App\Entity\LandPlants;
+use App\Interface\RedAlertServiceInterface;
 use App\Interface\TranslationServiceInterface;
 use App\Interface\TTSServiceInterface;
 use App\Repository\AdviceRepository;
@@ -20,12 +22,20 @@ class AdviceController extends AbstractController{
     private $em;
     private $translator;
     private $tts;
+    private $RedAlertService;
 
-    public function __construct(AdviceRepository $repo_ , EntityManagerInterface $em_, TranslationServiceInterface $translator , TTSServiceInterface $tts) {
+    public function __construct(
+                AdviceRepository $repo_ ,
+                EntityManagerInterface $em_, 
+                TranslationServiceInterface $translator , 
+                TTSServiceInterface $tts , 
+                RedAlertServiceInterface $RedAlertService) 
+        {
         $this->repo = $repo_;
         $this->em = $em_;
         $this->translator = $translator;
         $this->tts = $tts;
+        $this->RedAlertService = $RedAlertService;
     }
 
     // Get all plants
@@ -64,7 +74,22 @@ class AdviceController extends AbstractController{
         $data = json_decode($request->getContent(), true);
 
         $advice = new Advice();
-        $advice->setUserPlantId($data['user_plant_id']);
+        
+        // Fetch the LandPlant entity by its ID
+        $landPlant = $this->em->getRepository(LandPlants::class)->find($data['land_plant_id']);
+
+        if (!$landPlant) {
+            return new JsonResponse(['error' => 'Invalid land_plant_id'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Associate the LandPlant entity with the Advice entity
+        $advice->setLandPlant($landPlant);
+        $advice->setMinTempC($data['min_temp_c']);
+        $advice->setMaxTempC($data['max_temp_c']);
+        
+        if($this->RedAlertService->checkRedAlert($advice)){
+            $advice->setRedAlert(true);
+        }
 
         if (!empty($data['advice_text_en'])) {
             
@@ -85,7 +110,7 @@ class AdviceController extends AbstractController{
         // $advice->setAdviceTextAr($data['advice_text_ar'] ?? null);
 
 
-        // Convert string to DateTimeImmutable
+        //! Convert string to DateTimeImmutable
         $createdAt = isset($data['created_at']) ? new \DateTimeImmutable($data['created_at']) : new \DateTimeImmutable();
         $advice->setCreatedAt($createdAt);
 
@@ -94,11 +119,12 @@ class AdviceController extends AbstractController{
 
         return $this->json([
             'id' => $advice->getId(),
-            'user_plant_id' => $advice->getUserPlantId(),
+            'land_plant_id' => $advice->getLandPlant()->getId(),
             'advice_text_en' => $advice->getAdviceTextEn(),
             'advice_text_fr' => $advice->getAdviceTextFr(),
             'advice_text_ar' => $advice->getAdviceTextAr(),
             'AudioPath' => $advice->getAudioPath(),
+            'RedAlert'=> $advice->isRedAlert(),
             'created_at' => $advice->getCreatedAt()->format('Y-m-d H:i:s'),
         ]);
     }
@@ -117,8 +143,8 @@ class AdviceController extends AbstractController{
             return new JsonResponse(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
         }
 
-        if (isset($data['user_plant_id'])) {
-            $advice->setUserPlantId($data['user_plant_id']);
+        if (isset($data['land_plant_id'])) {
+            $advice->setUserPlantId($data['land_plant_id']);
         }
 
         if (isset($data['advice_text_en'])) {
