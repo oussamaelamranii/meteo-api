@@ -8,7 +8,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AdviceRepository::class)]
-// #[ApiResource]
+
 class Advice
 {
     #[ORM\Id]
@@ -16,8 +16,7 @@ class Advice
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $user_plant_id = null;
+    //! what plant and land this advice belongs to 
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $advice_text_en = null;
@@ -34,6 +33,44 @@ class Advice
     #[ORM\Column(length: 255)]
     private ?string $AudioPath = null;
 
+
+    //! this for when we fetch temp from api we check its range here
+    #[ORM\Column]
+    private ?int $min_temp_C = null;
+
+    #[ORM\Column]
+    private ?int $max_temp_C = null;
+
+    //! redAdvice (bool) alerts when aan advice is sensitive by sms , email , notif
+    #[ORM\Column]
+    private ?bool $RedAlert = false;
+
+//!===================================
+
+    #[ORM\ManyToOne(targetEntity:LandPlants::class, inversedBy:"advices")]
+    #[ORM\JoinColumn(name:"land_plant_id", referencedColumnName:"id", onDelete:"CASCADE")]
+
+    private ?LandPlants $landPlant = null;
+
+
+
+    // Getter and setter for the landPlant relation
+    public function getLandPlant(): ?LandPlants
+    {
+        return $this->landPlant;
+    }
+
+    public function setLandPlant(?LandPlants $landPlant): self
+    {
+        $this->landPlant = $landPlant;
+
+        return $this;
+    }
+
+
+//!===================================
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -46,17 +83,6 @@ class Advice
         return $this;
     }
 
-    public function getUserPlantId(): ?int
-    {
-        return $this->user_plant_id;
-    }
-
-    public function setUserPlantId(int $user_plant_id): static
-    {
-        $this->user_plant_id = $user_plant_id;
-
-        return $this;
-    }
 
     public function getAdviceTextEn(): ?string
     {
@@ -117,4 +143,42 @@ class Advice
 
         return $this;
     }
+
+    public function getMinTempC(): ?int
+    {
+        return $this->min_temp_C;
+    }
+
+    public function setMinTempC(int $min_temp_C): static
+    {
+        $this->min_temp_C = $min_temp_C;
+
+        return $this;
+    }
+
+    public function getMaxTempC(): ?int
+    {
+        return $this->max_temp_C;
+    }
+
+    public function setMaxTempC(int $max_temp_C): static
+    {
+        $this->max_temp_C = $max_temp_C;
+
+        return $this;
+    }
+
+    public function isRedAlert(): ?bool
+    {
+        return $this->RedAlert;
+    }
+
+    public function setRedAlert(bool $RedAlert): static
+    {
+        $this->RedAlert = $RedAlert;
+
+        return $this;
+    }
+
+    
 }

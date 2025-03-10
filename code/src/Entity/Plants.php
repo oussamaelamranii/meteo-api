@@ -5,6 +5,9 @@ namespace App\Entity;
 use App\Enum\SunlightRequirement;
 use App\Repository\PlantsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 
 #[ORM\Entity(repositoryClass: PlantsRepository::class)]
 class Plants
@@ -37,6 +40,25 @@ class Plants
 
     #[ORM\Column(enumType: SunlightRequirement::class)]
     private ?SunlightRequirement $sunlight_requirement = null;
+
+    #[ORM\Column]
+    private ?int $safe_min_temp_C = null;
+
+    #[ORM\Column]
+    private ?int $safe_max_temp_C = null;
+
+    #[ORM\OneToMany(mappedBy: "plant", targetEntity: LandPlants::class)]
+    private Collection $landPlants;
+
+    public function __construct()
+    {
+        $this->landPlants = new ArrayCollection();
+    }
+
+    public function getLandPlants(): Collection
+    {
+        return $this->landPlants;
+    }
 
     public function getId(): ?int
     {
@@ -142,6 +164,30 @@ class Plants
     public function setSunlightRequirement(SunlightRequirement $sunlight_requirement): static
     {
         $this->sunlight_requirement = $sunlight_requirement;
+
+        return $this;
+    }
+
+    public function getSafeMinTempC(): ?int
+    {
+        return $this->safe_min_temp_C;
+    }
+
+    public function setSafeMinTempC(int $safe_min_temp_C): static
+    {
+        $this->safe_min_temp_C = $safe_min_temp_C;
+
+        return $this;
+    }
+
+    public function getSafeMaxTempC(): ?int
+    {
+        return $this->safe_max_temp_C;
+    }
+
+    public function setSafeMaxTempC(int $safe_max_temp_C): static
+    {
+        $this->safe_max_temp_C = $safe_max_temp_C;
 
         return $this;
     }
