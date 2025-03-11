@@ -12,9 +12,9 @@ use Doctrine\ORM\EntityManagerInterface;
     class RedAlertService implements RedAlertServiceInterface
     {
         
-        public function checkRedAlert(Advice $advice): bool
+        public function checkRedAlert(Advice $advice , float $currentTemp): bool
         {
-            $plant = $advice->getLandPlant()->getPlant();
+            $plant = $advice->getPlant();
 
             if (!$plant) {
                 return false;
@@ -24,7 +24,7 @@ use Doctrine\ORM\EntityManagerInterface;
             $safeMax = $plant->getSafeMaxTempC();
 
             // If the advice's temperature range falls outside the plant's safe range
-            return ($advice->getMaxTempC() > $safeMax || $advice->getMinTempC() < $safeMin);
+            return ($currentTemp < $safeMin || $currentTemp > $safeMax);
         }
     }
 

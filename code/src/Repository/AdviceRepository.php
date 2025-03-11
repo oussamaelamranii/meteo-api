@@ -21,20 +21,23 @@ class AdviceRepository extends ServiceEntityRepository
         parent::__construct($registry, Advice::class);
     }
 
-    public function findByTemperatureRange(int $LandPlantId, float $currentTemp): array
+    public function findByTemperatureRange(int $landId, int $plantId, float $currentTemp): array
     {
         $qb = $this->createQueryBuilder('a')
-        ->join('a.landPlant', 'lp') // Assuming 'a.LandPlant' is the property of the Advice entity
-        ->where('lp.id = :LandPlantId') // Comparing the ID of the LandPlant entity
+        ->join('a.land', 'l')
+        ->join('a.plant', 'p')
+        ->where('l.id = :landId')
+        ->andWhere('p.id = :plantId')
         ->andWhere(':currentTemp BETWEEN a.min_temp_C AND a.max_temp_C')
-        ->setParameter('LandPlantId', $LandPlantId) // Pass the ID of the LandPlant
-        ->setParameter('currentTemp', $currentTemp); // Pass the temperature
+        ->setParameter('landId', $landId)
+        ->setParameter('plantId', $plantId)
+        ->setParameter('currentTemp', $currentTemp);
 
         $advices = $qb->getQuery()->getResult();
 
         //! verify if current temp is in the safe range of temp 
         foreach ($advices as $advice) {
-            if ($this->ra->checkRedAlert($advice)) {
+            if ($this->ra->checkRedAlert($advice,$currentTemp)) {
                 $advice->setRedAlert(true);
             }
         }

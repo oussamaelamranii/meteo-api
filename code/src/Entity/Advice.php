@@ -11,12 +11,19 @@ use Doctrine\ORM\Mapping as ORM;
 
 class Advice
 {
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type:"integer")]
     private ?int $id = null;
 
-    //! what plant and land this advice belongs to 
+    #[ORM\ManyToOne(targetEntity: Land::class)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
+    private ?Land $land = null;
+
+    #[ORM\ManyToOne(targetEntity: Plants::class, inversedBy: "advices")]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
+    private ?Plants $plant = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $advice_text_en = null;
@@ -45,45 +52,29 @@ class Advice
     #[ORM\Column]
     private ?bool $RedAlert = false;
 
-//!===================================
 
-    #[ORM\ManyToOne(targetEntity:LandPlants::class, inversedBy:"advices")]
-    #[ORM\JoinColumn(name:"land_plant_id", referencedColumnName:"id", onDelete:"CASCADE")]
-
-    private ?LandPlants $landPlant = null;
-
-
-
-    // Getter and setter for the landPlant relation
-    public function getLandPlant(): ?LandPlants
-    {
-        return $this->landPlant;
-    }
-
-    public function setLandPlant(?LandPlants $landPlant): self
-    {
-        $this->landPlant = $landPlant;
-
-        return $this;
-    }
-
-
-//!===================================
-
-
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function setId(int $id): static
-    {
-        $this->id = $id;
+    public function getLand(): ?Land {
+        return $this->land;
+    }
 
+    public function setLand(?Land $land): self {
+        $this->land = $land;
         return $this;
     }
 
+    public function getPlant(): ?Plants {
+        return $this->plant;
+    }
 
+    public function setPlant(?Plants $plant): self {
+        $this->plant = $plant;
+        return $this;
+    }
+    
     public function getAdviceTextEn(): ?string
     {
         return $this->advice_text_en;
@@ -180,5 +171,102 @@ class Advice
         return $this;
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+// ! =================================old======================================
+//     #[ORM\Id]
+//     #[ORM\GeneratedValue]
+//     #[ORM\Column]
+//     private ?int $id = null;
+
+//     //! what plant and land this advice belongs to 
+
+//     #[ORM\Column(type: Types::TEXT)]
+//     private ?string $advice_text_en = null;
+
+//     #[ORM\Column(type: 'datetime_immutable', options: ['default' => 'CURRENT_TIMESTAMP'])]
+//     private ?\DateTimeImmutable $created_at = null;
+
+//     #[ORM\Column(type: Types::TEXT)]
+//     private ?string $advice_text_fr = null;
+
+//     #[ORM\Column(type: Types::TEXT)]
+//     private ?string $advice_text_ar = null;
+
+//     #[ORM\Column(length: 255)]
+//     private ?string $AudioPath = null;
+
+
+//     //! this for when we fetch temp from api we check its range here
+//     #[ORM\Column]
+//     private ?int $min_temp_C = null;
+
+//     #[ORM\Column]
+//     private ?int $max_temp_C = null;
+
+//     //! redAdvice (bool) alerts when aan advice is sensitive by sms , email , notif
+//     #[ORM\Column]
+//     private ?bool $RedAlert = false;
+
+// //!===================================
+
+//     #[ORM\ManyToOne(targetEntity:LandPlants::class, inversedBy:"advices")]
+//     #[ORM\JoinColumn(name:"land_plant_id", referencedColumnName:"id", onDelete:"CASCADE")]
+
+//     private ?LandPlants $landPlant = null;
+
+
+
+//     // Getter and setter for the landPlant relation
+//     public function getLandPlant(): ?LandPlants
+//     {
+//         return $this->landPlant;
+//     }
+
+//     public function setLandPlant(?LandPlants $landPlant): self
+//     {
+//         $this->landPlant = $landPlant;
+
+//         return $this;
+//     }
+
+
+// //!===================================
+
+
+//     public function getId(): ?int
+//     {
+//         return $this->id;
+//     }
+
+//     public function setId(int $id): static
+//     {
+//         $this->id = $id;
+
+//         return $this;
+//     }
+
+
+//     
     
 }
