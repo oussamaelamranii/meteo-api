@@ -58,7 +58,8 @@
 /build/
 
 .env
-
+code\.env
+.\.env
 # Composer PHAR
 /composer.phar
 

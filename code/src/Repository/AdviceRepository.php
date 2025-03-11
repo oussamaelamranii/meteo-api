@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Advice;
+use App\Service\RedAlertService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -11,14 +12,40 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class AdviceRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+
+    private RedAlertService $ra;
+    
+    public function __construct(ManagerRegistry $registry , RedAlertService $ra)
+    {   
+        $this->ra = $ra;
         parent::__construct($registry, Advice::class);
     }
 
-//    /**
-//     * @return Advice[] Returns an array of Advice objects
-//     */
+    public function findByTemperatureRange(int $landId, int $plantId, float $currentTemp): array
+    {
+        $qb = $this->createQueryBuilder('a')
+        ->join('a.land', 'l')
+        ->join('a.plant', 'p')
+        ->where('l.id = :landId')
+        ->andWhere('p.id = :plantId')
+        ->andWhere(':currentTemp BETWEEN a.min_temp_C AND a.max_temp_C')
+        ->setParameter('landId', $landId)
+        ->setParameter('plantId', $plantId)
+        ->setParameter('currentTemp', $currentTemp);
+
+        $advices = $qb->getQuery()->getResult();
+
+        //! verify if current temp is in the safe range of temp 
+        foreach ($advices as $advice) {
+            if ($this->ra->checkRedAlert($advice,$currentTemp)) {
+                $advice->setRedAlert(true);
+            }
+        }
+
+        return $advices;
+    }
+
+
 //    public function findByExampleField($value): array
 //    {
 //        return $this->createQueryBuilder('a')
