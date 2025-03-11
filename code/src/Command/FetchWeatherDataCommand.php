@@ -23,13 +23,13 @@ class FetchWeatherDataCommand extends Command
         $this->cacheService = $cacheService;
     }
 
-    protected function configure(): void
+    /*protected function configure(): void
     {
         $this
             ->setName('app:update-weather-cache')
             ->setDescription('This command allows the program to fetch weather data every 12 hours')
         ;
-    }
+    }*/
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -43,7 +43,7 @@ class FetchWeatherDataCommand extends Command
             //$io->success("Weather data cache successfully updated Mr ayman!");
             return Command::SUCCESS;
         }catch (\Exception $exception){
-            $io->error("Weather data cache failed updated Mr ayman!");
+            $io->error("Weather data cache update failed Mr ayman!" . $exception->getMessage());
             return Command::FAILURE;
         }
     }

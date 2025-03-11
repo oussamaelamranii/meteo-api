@@ -10,14 +10,13 @@ use Symfony\Component\Routing\Attribute\Route;
 class WeatherCacheController extends AbstractController
 {
     private CacheService $cacheService;
-
     public function __construct(CacheService $cacheService)
     {
         $this->cacheService = $cacheService;
     }
 
-    #[Route('/weather-cache', name: 'weather_cache', methods: ['GET'])]
-    public function getWeatherCache(): JsonResponse
+    #[Route('/weather-all-cache', name: 'weather_cache', methods: ['GET'])]
+    public function getWeatherAllCache(): JsonResponse
     {
         $weatherData = $this->cacheService->getWeatherFromCache();
 
@@ -34,9 +33,6 @@ class WeatherCacheController extends AbstractController
                     ], 503);
                 }
             }
-
         return $this->json($weatherData);
     }
 }
-// docker exec -it meteo-api-redis-1 redis-cli
-//  GET CUC8h6Dc2D:

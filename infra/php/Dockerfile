@@ -1,5 +1,10 @@
 FROM php:8.3-fpm
 
+
+# definition du fuseau horaire
+RUN ln -snf /usr/share/zoneinfo/Africa/Casablanca /etc/localtime && echo "Africa/Casablanca" > /etc/timezone
+
+
 # set main params
 ARG BUILD_ARGUMENT_ENV=dev
 
@@ -24,6 +29,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
       libzip-dev \
       wget \
       librabbitmq-dev \
+      redis-tools \
     && pecl install amqp \
     && docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
     && docker-php-ext-configure intl \
@@ -78,12 +84,9 @@ RUN apt-get install -y git  libxslt-dev libldap2-dev libssl-dev
 COPY ./php/crontab /etc/cron.d/symfony-cron
 
 #donner les bonnes permissions au fichier cron
-RUN chmod 0644 /etc/cron.d/symfony-cron
+RUN chmod 0644 /etc/cron.d/symfony-cron && crontab /etc/cron.d/symfony-cron
 
-# appliquer la configuration Cron
-RUN crontab /etc/cron.d/symfony-cron
-
-# lancer le service cron en tache de fond et demarrer php-fpm
-CMD cron && php-fpm -F
+# lancer cron et PHP-FPM en parallèle
+CMD service cron start && php-fpm -F
 
 USER root
