@@ -2,18 +2,29 @@
 
 namespace App\Repository;
 
+
+use App\Entity\LandPlants;
 use App\Entity\UserPlants;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<UserPlants>
  */
-class UserPlantsRepository extends ServiceEntityRepository
+class LandPlantsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, UserPlants::class);
+        parent::__construct($registry, LandPlants::class);
+    }
+
+    public function findPlantsByLand(int $landId): array
+    {
+        return $this->createQueryBuilder('fp')
+            ->andWhere('fp.land_id = :landId')
+            ->setParameter('landId', $landId)
+            ->getQuery()
+            ->getResult();
     }
 
 //    /**
