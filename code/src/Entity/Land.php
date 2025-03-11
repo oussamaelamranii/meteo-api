@@ -5,93 +5,71 @@ namespace App\Entity;
 use App\Repository\LandRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: LandRepository::class)]
 class Land
-{
+{    
+    
+    public function __construct()
+    {
+        $this->plants = new ArrayCollection();
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    //! user related to land ?
-    #[ORM\Column]
-    private ?int $user_id = null;
+    #[ORM\ManyToOne(targetEntity: Farm::class, inversedBy: "lands")]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Farm $farm = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    #[ORM\ManyToMany(targetEntity: Plants::class, inversedBy: "lands")]
+    #[ORM\JoinTable(name: "land_plant")]
+    private Collection $plants;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 6)]
-    private ?string $latitude = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 6)]
-    private ?string $longitude = null;
-
-    #[ORM\Column]
-    private ?int $FarmId = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUserId(): ?int
+    public function getFarm(): ?Farm
     {
-        return $this->user_id;
+        return $this->farm;
     }
 
-    public function setUserId(int $user_id): static
+    public function setFarm(?Farm $farm): self
     {
-        $this->user_id = $user_id;
-
+        $this->farm = $farm;
         return $this;
     }
 
-    public function getName(): ?string
-    {
-        return $this->name;
+    public function getPlants(): Collection {
+        return $this->plants;
     }
 
-    public function setName(string $name): static
-    {
-        $this->name = $name;
-
+    public function addPlant(Plants $plant): self {
+        if (!$this->plants->contains($plant)) {
+            $this->plants[] = $plant;
+            $plant->addLand($this);
+        }
         return $this;
     }
 
-    public function getLatitude(): ?string
-    {
-        return $this->latitude;
-    }
-
-    public function setLatitude(string $latitude): static
-    {
-        $this->latitude = $latitude;
-
+    public function removePlant(Plants $plant): self {
+        if ($this->plants->removeElement($plant)) {
+            $plant->removeLand($this);
+        }
         return $this;
     }
 
-    public function getLongitude(): ?string
-    {
-        return $this->longitude;
-    }
 
-    public function setLongitude(string $longitude): static
-    {
-        $this->longitude = $longitude;
+// ! =================================old======================================
 
-        return $this;
-    }
 
-    public function getFarmId(): ?int
-    {
-        return $this->FarmId;
-    }
 
-    public function setFarmId(int $FarmId): static
-    {
-        $this->FarmId = $FarmId;
-
-        return $this;
-    }
 }

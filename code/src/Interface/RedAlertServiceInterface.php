@@ -7,6 +7,6 @@
 
     interface RedAlertServiceInterface
     {
-        public function checkRedAlert(Advice $advice): bool;
+        public function checkRedAlert(Advice $advice, float $currentTemp): bool;
     }
 ?>

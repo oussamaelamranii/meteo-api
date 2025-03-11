@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Advice;
+use App\Entity\Land;
 use App\Entity\LandPlants;
+use App\Entity\Plants;
 use App\Interface\RedAlertServiceInterface;
 use App\Interface\TranslationServiceInterface;
 use App\Interface\TTSServiceInterface;
@@ -75,21 +77,28 @@ class AdviceController extends AbstractController{
 
         $advice = new Advice();
         
-        // Fetch the LandPlant entity by its ID
-        $landPlant = $this->em->getRepository(LandPlants::class)->find($data['land_plant_id']);
+        //? setting advice's land
+        $land = $this->em->getRepository(Land::class)->find($data['land_id']);
+        if (!$land) {
+            return new JsonResponse(['error' => 'Invalid land_id'], Response::HTTP_BAD_REQUEST);
+        }
 
-        if (!$landPlant) {
-            return new JsonResponse(['error' => 'Invalid land_plant_id'], Response::HTTP_BAD_REQUEST);
+        //? setting advice's plant
+        $plant = $this->em->getRepository(Plants::class)->find($data['plant_id']);
+        if (!$plant) {
+            return new JsonResponse(['error' => 'Invalid plant_id'], Response::HTTP_BAD_REQUEST);
         }
 
         // Associate the LandPlant entity with the Advice entity
-        $advice->setLandPlant($landPlant);
+        $advice->setLand($land);
+        $advice->setPlant($plant);
         $advice->setMinTempC($data['min_temp_c']);
         $advice->setMaxTempC($data['max_temp_c']);
         
-        if($this->RedAlertService->checkRedAlert($advice)){
-            $advice->setRedAlert(true);
-        }
+        //! Bug !!!!!!!!!!!!!! Where can i get the current Tempeture from ? !!!!!!!!!!!!!!!! =======================================
+        // if($this->RedAlertService->checkRedAlert($advice , $currentTemp ? )){
+        //     $advice->setRedAlert(true);
+        // }
 
         if (!empty($data['advice_text_en'])) {
             
@@ -119,7 +128,8 @@ class AdviceController extends AbstractController{
 
         return $this->json([
             'id' => $advice->getId(),
-            'land_plant_id' => $advice->getLandPlant()->getId(),
+            'land_id' => $advice->getLand()->getId(),
+            'plant_id' => $advice->getPlant()->getId(),
             'advice_text_en' => $advice->getAdviceTextEn(),
             'advice_text_fr' => $advice->getAdviceTextFr(),
             'advice_text_ar' => $advice->getAdviceTextAr(),
