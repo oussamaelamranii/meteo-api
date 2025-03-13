@@ -4,7 +4,6 @@ namespace App\Service;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 
 class CacheService
 {
@@ -38,7 +37,6 @@ class CacheService
             $this->logger->error("erreur lors du stockage des donnees meteo dans le cache : " . $e->getMessage());
         }
     }
-
     public function getWeatherFromCache(): ?array
     {
         return $this->cache->get('cache_weather', function(){

@@ -1,84 +1,203 @@
 {
-    "userID": "12345",
-    "userLocation": {
-      "country": "Morocco",
-      "region": "Rabat-Salé-Kénitra",
-      "city": "Rabat",
-      "address": "123 Green Street, Apartment 4B",
-      "coordinates": {
-        "X": 34.020882,
-        "Y": -6.841650
-      }
+  "Farm": [
+    {
+      "FarmID": "F001",
+      "UserID": "12345",
+      "Land": [
+        {
+          "LandId": "123",
+          "LandName": "hda l couri",
+          "Coordinate": [
+            {
+              "CoordinateId": "561",
+              "X": 34.020882,
+              "Y": -6.841650
+            },
+            {
+              "CoordinateId": "562",
+              "X": 55.020882,
+              "Y": -9.841650
+            },
+            {
+              "CoordinateId": "563",
+              "X": 15.020882,
+              "Y": -2.841650
+            }
+          ],
+          "LatitudeCenter": 18.020882,
+          "LongitudeCenter": -13.841650,
+          "Surface": 40500,
+          "Plants": ["Olive", "Oussama", "Zaki", "Anass", "Ayman"]
+        },
+        {
+          "LandId": "124",
+          "LandName": "hda djaj",
+          "Coordinate": [
+            {
+              "CoordinateId": "567",
+              "X": 19.020882,
+              "Y": -6.841650
+            },
+            {
+              "CoordinateId": "568",
+              "X": 20.020882,
+              "Y": -9.841650
+            },
+            {
+              "CoordinateId": "569",
+              "X": 15.020882,
+              "Y": -33.841650
+            }
+          ],
+          "LatitudeCenter": 18.020882,
+          "LongitudeCenter": -13.841650,
+          "Surface": 77500,
+          "Plants": ["Tchine", "Lim", "Mandarin"]
+        }
+      ]
     },
-    "farmlands": [
-      {
-        "farmID": "F001",
-        "coordinates": {
-          "X": 35.6895,
-          "Y": -3.9924,
-          "surface": "2.5 hectares",
-          "localisation": {
-            "country": "Morocco",
-            "region": "Oriental",
-            "city": "Oujda"
-          }
+    {
+      "FarmID": "F002",
+      "UserID": "67890",
+      "Land": [
+        {
+          "LandId": "125",
+          "LandName": "lli flwest",
+          "Coordinate": [
+            {
+              "CoordinateId": "570",
+              "X": 30.427755,
+              "Y": -9.598107
+            },
+            {
+              "CoordinateId": "571",
+              "X": 32.427755,
+              "Y": -10.598107
+            },
+            {
+              "CoordinateId": "572",
+              "X": 29.427755,
+              "Y": -8.598107
+            }
+          ],
+          "LatitudeCenter": 18.020882,
+          "LongitudeCenter": -13.841650,
+          "Surface": 65000,
+          "Plants": ["Argan", "Figue", "Pistache"]
         },
-        "plants": [
-          "Wheat",
-          "Barley",
-          "Olives"
-        ],
-        "humiditySensors": [
-          {
-            "capteurID": "C001",
-            "humidityValue": 45,
-            "coordinates": {
-                            "X": 35.6895,
-                            "Y": -3.9924
-                          }
-          },
-          {
-            "capteurID": "C002",
-            "humidityValue": 50
-          }
-        ]
-      },
-      {
-        "farmID": "F002",
-        "coordinates": {
-          "X": 36.7125,
-          "Y": -4.0523,
-          "surface": "1.8 hectares",
-          "localisation": {
-            "country": "Morocco",
-            "region": "Tanger-Tétouan-Al Hoceïma",
-            "city": "Tetouan"
-          }
+        {
+          "LandId": "126",
+          "LandName": "lteht",
+          "Coordinate": [
+            {
+              "CoordinateId": "573",
+              "X": 29.693562,
+              "Y": -9.732835
+            },
+            {
+              "CoordinateId": "574",
+              "X": 28.693562,
+              "Y": -8.732835
+            },
+            {
+              "CoordinateId": "575",
+              "X": 27.693562,
+              "Y": -10.732835
+            }
+          ],
+          "LatitudeCenter": 18.020882,
+          "LongitudeCenter": -13.841650,
+          "Surface": 50000,
+          "Plants": ["Amandier", "Palmier", "Cactus"]
+        }
+      ]
+    },
+    {
+      "FarmID": "F003",
+      "UserID": "24680",
+      "Land": [
+        {
+          "LandId": "127",
+          "LandName": "limen",
+          "Coordinate": [
+            {
+              "CoordinateId": "576",
+              "X": 31.620182,
+              "Y": -7.989540
+            },
+            {
+              "CoordinateId": "577",
+              "X": 32.620182,
+              "Y": -8.989540
+            },
+            {
+              "CoordinateId": "578",
+              "X": 30.620182,
+              "Y": -6.989540
+            }
+          ],
+          "LatitudeCenter": 18.020882,
+          "LongitudeCenter": -13.841650,
+          "Surface": 50000,
+          "Plants": ["Palmier", "Grenadier", "Cactus"]
         },
-        "plants": [
-          "Tomatoes",
-          "Peppers"
-        ],
-        "humiditySensors": [
-          {
-            "capteurID": "C003",
-            "humidityValue": 60
-          },
-          {
-            "capteurID": "C004",
-            "humidityValue": 55
-          },
-          {
-            "capteurID": "C005",
-            "humidityValue": 62
-          }
-        ]
-      }
-    ],
-    "housePlants": [
-      "Basil",
-      "Aloe Vera",
-      "Orchid"
-    ]
-  }
-  
+        {
+          "LandId": "128",
+          "LandName": "lmrb3a",
+          "Coordinate": [
+            {
+              "CoordinateId": "579",
+              "X": 31.508492,
+              "Y": -9.769556
+            },
+            {
+              "CoordinateId": "580",
+              "X": 32.508492,
+              "Y": -10.769556
+            },
+            {
+              "CoordinateId": "581",
+              "X": 30.508492,
+              "Y": -8.769556
+            }
+          ],
+          "LatitudeCenter": 18.020882,
+          "LongitudeCenter": -13.841650,
+          "Surface": 60000,
+          "Plants": ["Eucalyptus", "Thym", "Lavande"]
+        }
+      ]
+    },
+    {
+      "FarmID": "F004",
+      "UserID": "12345",
+      "Land": [
+        {
+          "LandId": "12351",
+          "LandName": "hda l couri",
+          "Coordinate": [
+            {
+              "CoordinateId": "561",
+              "X": 34.020882,
+              "Y": -6.841650
+            },
+            {
+              "CoordinateId": "562",
+              "X": 55.020882,
+              "Y": -9.841650
+            },
+            {
+              "CoordinateId": "563",
+              "X": 15.020882,
+              "Y": -2.841650
+            }
+          ],
+          "LatitudeCenter": 18.020882,
+          "LongitudeCenter": -13.841650,
+          "Surface": 40500,
+          "Plants": ["Olive", "Oussama", "Zaki", "Anass", "Ayman"]
+        }
+      ]
+    }
+  ]
+}

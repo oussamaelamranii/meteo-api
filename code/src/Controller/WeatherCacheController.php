@@ -10,33 +10,29 @@ use Symfony\Component\Routing\Attribute\Route;
 class WeatherCacheController extends AbstractController
 {
     private CacheService $cacheService;
-
     public function __construct(CacheService $cacheService)
     {
         $this->cacheService = $cacheService;
     }
 
-    #[Route('/weather-cache', name: 'weather_cache', methods: ['GET'])]
-    public function getWeatherCache(): JsonResponse
+    #[Route('/weather-all-cache', name: 'weather_cache', methods: ['GET'])]
+    public function getWeatherAllCache(): JsonResponse
     {
-        //$this->cacheService->storeWeatherInCache();
         $weatherData = $this->cacheService->getWeatherFromCache();
 
-        if(empty($weatherData))
-        {
-            $this->cacheService->storeWeatherInCache();
-            $weatherData = $this->cacheService->getWeatherFromCache();
             if(empty($weatherData))
             {
-                return $this->json([
-                    'status' => 404,
-                    'error' => 'les donnees ne sont pas disponibles dans le cache'
-                ], 404);
-            }
-        }
+                $this->cacheService->storeWeatherInCache();
+                $weatherData = $this->cacheService->getWeatherFromCache();
 
+                if(empty($weatherData))
+                {
+                    return $this->json([
+                        'status' => 503,
+                        'error' => 'Erreur temporaire, les donnees ne sont pas disponibles dans le cache'
+                    ], 503);
+                }
+            }
         return $this->json($weatherData);
     }
 }
-// docker exec -it meteo-api-redis-1 redis-cli
-//  GET CUC8h6Dc2D:
