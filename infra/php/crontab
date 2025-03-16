@@ -1,1 +1,1 @@
-* 6,18 * * * /usr/local/bin/php /var/www/html/bin/console app:update-weather-cache && redis-cli -h redis -p 6379 BGSAVE  >> /var/www/html/var/log/cron.log 2>&1
+0 6,18 * * * /usr/local/bin/php /var/www/html/bin/console app:update-weather-cache && redis-cli -h redis -p 6379 BGSAVE  >> /var/www/html/var/log/cron.log 2>&1
