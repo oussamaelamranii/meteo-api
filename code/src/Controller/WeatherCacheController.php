@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\CacheService;
+use App\Service\WeatherService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -10,9 +11,11 @@ use Symfony\Component\Routing\Attribute\Route;
 class WeatherCacheController extends AbstractController
 {
     private CacheService $cacheService;
-    public function __construct(CacheService $cacheService)
+    private WeatherService $weatherService;
+    public function __construct(CacheService $cacheService, WeatherService $weatherService)
     {
         $this->cacheService = $cacheService;
+        $this->weatherService = $weatherService;
     }
 
     #[Route('/weather-all-cache', name: 'weather_cache', methods: ['GET'])]
@@ -34,5 +37,12 @@ class WeatherCacheController extends AbstractController
                 }
             }
         return $this->json($weatherData);
+    }
+
+    #[Route('/weather', name: 'weather_api', methods: ['GET'])]
+    public function getWeatherFromApi(): JsonResponse
+    {
+        $data = $this->weatherService->getWeather();
+        return $this->json($data);
     }
 }

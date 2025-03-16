@@ -39,9 +39,14 @@ class FetchWeatherDataCommand extends Command
             $this->cacheService->storeWeatherInCache();
 
             $date = new \DateTimeImmutable();
-            $io->success(sprintf('Weather data cache successfully updated Mr ayman! on: %s', $date->format('Y-m-d H:i:s')));
-            //$io->success("Weather data cache successfully updated Mr ayman!");
+            $message = (sprintf('[OK] Weather data cache successfully updated Mr ayman! on: %s', $date->format('Y-m-d H:i:s')));
+
+            file_put_contents('/var/www/html/var/log/cache_update.log', $message . PHP_EOL, FILE_APPEND);
+
+            $io->success($message);
+
             return Command::SUCCESS;
+
         }catch (\Exception $exception){
             $io->error("Weather data cache update failed Mr ayman!" . $exception->getMessage());
             return Command::FAILURE;

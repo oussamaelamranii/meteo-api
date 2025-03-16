@@ -84,9 +84,11 @@ RUN apt-get install -y git  libxslt-dev libldap2-dev libssl-dev
 COPY ./php/crontab /etc/cron.d/symfony-cron
 
 #donner les bonnes permissions au fichier cron
-RUN chmod 0644 /etc/cron.d/symfony-cron && crontab /etc/cron.d/symfony-cron
+RUN chmod 0644 /etc/cron.d/symfony-cron
+
+RUN crontab /etc/cron.d/symfony-cron
 
 # lancer cron et PHP-FPM en parallèle
-CMD service cron start && php-fpm -F
+CMD cron && php-fpm -F
 
 USER root

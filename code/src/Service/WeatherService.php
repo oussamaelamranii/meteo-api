@@ -20,7 +20,8 @@ class WeatherService
     {
         return $this->apiBaseUrl
             . "?latitude={$latitude}&longitude={$longitude}"
-            . "&current_weather=true&hourly=temperature_2m,relative_humidity_2m,precipitation"
+            . "&current_weather=true"
+            . "&hourly=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,soil_temperature_18cm,soil_moisture_9_to_27cm"
             . "&daily=temperature_2m_max,temperature_2m_min,sunshine_duration"
             . "&timezone=auto";
     }
@@ -33,25 +34,28 @@ class WeatherService
         $jsonData = file_get_contents($fakeJson);
         $data = json_decode($jsonData, true);
 
-        if(!isset($data['Farm']) || !is_array($data['Farm'])) {
+        if(!isset($data['Users']) || !is_array($data['Users'])) {
             throw new \RuntimeException("Erreur : donnees invalides! ");
         }
         $weatherData = [];
-        foreach ($data['Farm'] as $farm)
+        foreach ($data['Users'] as $user)
         {
-            $farmId = $farm['FarmID'];
-            $userId = $farm['UserID'];
-            foreach($farm['Land'] as $land)
+            $userId = $user['UserId'];
+            foreach($user['Farms'] as $farm)
             {
-                $landId = $land['LandId'];
-                $latitude = $land['LatitudeCenter'];
-                $longitude = $land['LongitudeCenter'];
-                $response = $this->client->request('GET', $this->buildWeatherApiUrl($latitude, $longitude));
+                $farmId = $farm['FarmId'];
+                foreach($farm['Lands'] as $land)
+                {
+                    $landId = $land['LandId'];
+                    $latitude = $land['CenterX'];
+                    $longitude = $land['CenterY'];
+                    $response = $this->client->request('GET', $this->buildWeatherApiUrl($latitude, $longitude));
 
-                if ($response->getStatusCode() !== 200) {
-                throw new \Exception("Erreur lors de la recuperation des donnees meteo : " . $response->getContent(false));
+                    if ($response->getStatusCode() !== 200) {
+                        throw new \Exception("Erreur lors de la recuperation des donnees meteo : " . $response->getContent(false));
+                    }
+                    $weatherData[$userId][$farmId][$landId] = $response->toArray();
                 }
-                $weatherData[$farmId][$landId] = $response->toArray();
             }
         }
         return $weatherData;
