@@ -21,29 +21,67 @@ class AdviceRepository extends ServiceEntityRepository
         parent::__construct($registry, Advice::class);
     }
 
-    public function findByTemperatureRange(int $landId, int $plantId, float $currentTemp): array
-    {
+    public function findByWeatherConditions(
+        int $landId, 
+        ?float $currentTemp, 
+        ?float $currentHumidity, 
+        ?float $currentPrecipitation, 
+        ?float $currentWindSpeed
+    ): array {
+        
         $qb = $this->createQueryBuilder('a')
-        ->join('a.land', 'l')
-        ->join('a.plant', 'p')
-        ->where('l.id = :landId')
-        ->andWhere('p.id = :plantId')
-        ->andWhere(':currentTemp BETWEEN a.min_temp_C AND a.max_temp_C')
-        ->setParameter('landId', $landId)
-        ->setParameter('plantId', $plantId)
-        ->setParameter('currentTemp', $currentTemp);
-
-        $advices = $qb->getQuery()->getResult();
-
-        //! verify if current temp is in the safe range of temp 
-        foreach ($advices as $advice) {
-            if ($this->ra->checkRedAlert($advice,$currentTemp)) {
-                $advice->setRedAlert(true);
-            }
+            ->where('a.land = :landId') ;
+            // ->andWhere('a.plant = :plantId'); 
+    
+        if ($currentTemp !== null) {
+            $qb->andWhere(':currentTemp BETWEEN a.min_temp_C AND a.max_temp_C')
+                ->setParameter('currentTemp', $currentTemp);
         }
-
-        return $advices;
+    
+        if ($currentHumidity !== null) {
+            $qb->andWhere(':currentHumidity BETWEEN a.min_humidity AND a.max_humidity')
+                ->setParameter('currentHumidity', $currentHumidity);
+        }
+    
+        if ($currentPrecipitation !== null) {
+            $qb->andWhere(':currentPrecipitation BETWEEN a.min_precipitation AND a.max_precipitation')
+                ->setParameter('currentPrecipitation', $currentPrecipitation);
+        }
+    
+        if ($currentWindSpeed !== null) {
+            $qb->andWhere(':currentWindSpeed BETWEEN a.min_wind_speed AND a.max_wind_speed')
+                ->setParameter('currentWindSpeed', $currentWindSpeed);
+        }
+    
+        $qb->setParameter('landId', $landId);
+            // ->setParameter('plantId', $plantId);
+    
+        return $qb->getQuery()->getResult();
     }
+
+    // public function findByTemperatureRange(int $landId, int $plantId, float $currentTemp): array
+    // {
+    //     $qb = $this->createQueryBuilder('a')
+    //     ->join('a.land', 'l')
+    //     ->join('a.plant', 'p')
+    //     ->where('l.id = :landId')
+    //     ->andWhere('p.id = :plantId')
+    //     ->andWhere(':currentTemp BETWEEN a.min_temp_C AND a.max_temp_C')
+    //     ->setParameter('landId', $landId)
+    //     ->setParameter('plantId', $plantId)
+    //     ->setParameter('currentTemp', $currentTemp);
+
+    //     $advices = $qb->getQuery()->getResult();
+
+    //     //! verify if current temp is in the safe range of temp 
+    //     foreach ($advices as $advice) {
+    //         if ($this->ra->checkRedAlert($advice,$currentTemp)) {
+    //             $advice->setRedAlert(true);
+    //         }
+    //     }
+
+    //     return $advices;
+    // }
 
 
 //    public function findByExampleField($value): array

@@ -17,12 +17,13 @@ class Plants
     {
         $this->lands = new ArrayCollection();
         $this->advices = new ArrayCollection();
+        $this->generalAdvices = new ArrayCollection();
     }
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -33,11 +34,32 @@ class Plants
     #[ORM\OneToMany(mappedBy: "plant", targetEntity: Advice::class)]
     private Collection $advices;
 
-    #[ORM\Column]
-    private ?int $safe_min_temp_C = null;
+    #[ORM\OneToMany(targetEntity: GeneralAdvice::class, mappedBy: "plant")]
+    private Collection $generalAdvices;
 
-    #[ORM\Column]
-    private ?int $safe_max_temp_C = null;
+    #[ORM\Column(nullable: true)]
+    private ?float $safeMinHumidity = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $safeMaxHumidity = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $safeMinPrecipitation = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $safeMaxPrecipitation = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $safeMinWindSpeed = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $safeMaxWindSpeed = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $safeMinTempC = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $safeMaxTempC = null;
 
 
 
@@ -83,6 +105,31 @@ class Plants
         return $this;
     }
 
+    public function getGeneralAdvices(): Collection
+    {
+        return $this->generalAdvices;
+    }
+
+    public function addGeneralAdvice(GeneralAdvice $generalAdvice): self
+    {
+        if (!$this->generalAdvices->contains($generalAdvice)) {
+            $this->generalAdvices->add($generalAdvice);
+            $generalAdvice->setPlant($this);
+        }
+        return $this;
+    }
+
+    public function removeGeneralAdvice(GeneralAdvice $generalAdvice): self
+    {
+        if ($this->generalAdvices->removeElement($generalAdvice)) {
+            // Set the plant to null if it was linked to this plant
+            if ($generalAdvice->getPlant() === $this) {
+                $generalAdvice->setPlant(null);
+            }
+        }
+        return $this;
+    }
+
     public function getName(): ?string
     {
         return $this->name;
@@ -97,24 +144,24 @@ class Plants
 
     public function getSafeMaxTempC(): ?int
     {
-        return $this->safe_max_temp_C;
+        return $this->safeMaxTempC;
     }
 
-    public function setSafeMaxTempC(int $safe_max_temp_C): static
+    public function setSafeMaxTempC(int $safeMaxTempC): static
     {
-        $this->safe_max_temp_C = $safe_max_temp_C;
+        $this->safeMaxTempC = $safeMaxTempC;
 
         return $this;
     }
 
     public function getSafeMinTempC(): ?int
     {
-        return $this->safe_min_temp_C;
+        return $this->safeMinTempC;
     }
 
-    public function setSafeMinTempC(int $safe_min_temp_C): static
+    public function setSafeMinTempC(int $safeMinTempC): static
     {
-        $this->safe_min_temp_C = $safe_min_temp_C;
+        $this->safeMinTempC = $safeMinTempC;
 
         return $this;
     }
@@ -270,6 +317,78 @@ class Plants
 
     //     return $this;
     // }
+
+    public function getSafeMinHumidity(): ?float
+    {
+        return $this->safeMinHumidity;
+    }
+
+    public function setSafeMinHumidity(?float $safeMinHumidity): static
+    {
+        $this->safeMinHumidity = $safeMinHumidity;
+
+        return $this;
+    }
+
+    public function getSafeMaxHumidity(): ?float
+    {
+        return $this->safeMaxHumidity;
+    }
+
+    public function setSafeMaxHumidity(?float $safeMaxHumidity): static
+    {
+        $this->safeMaxHumidity = $safeMaxHumidity;
+
+        return $this;
+    }
+
+    public function getSafeMinPrecipitation(): ?float
+    {
+        return $this->safeMinPrecipitation;
+    }
+
+    public function setSafeMinPrecipitation(?float $safeMinPrecipitation): static
+    {
+        $this->safeMinPrecipitation = $safeMinPrecipitation;
+
+        return $this;
+    }
+
+    public function getSafeMaxPrecipitation(): ?float
+    {
+        return $this->safeMaxPrecipitation;
+    }
+
+    public function setSafeMaxPrecipitation(?float $safeMaxPrecipitation): static
+    {
+        $this->safeMaxPrecipitation = $safeMaxPrecipitation;
+
+        return $this;
+    }
+
+    public function getSafeMinWindSpeed(): ?float
+    {
+        return $this->safeMinWindSpeed;
+    }
+
+    public function setSafeMinWindSpeed(?float $safeMinWindSpeed): static
+    {
+        $this->safeMinWindSpeed = $safeMinWindSpeed;
+
+        return $this;
+    }
+
+    public function getSafeMaxWindSpeed(): ?float
+    {
+        return $this->safeMaxWindSpeed;
+    }
+
+    public function setSafeMaxWindSpeed(?float $safeMaxWindSpeed): static
+    {
+        $this->safeMaxWindSpeed = $safeMaxWindSpeed;
+
+        return $this;
+    }
 
 
 

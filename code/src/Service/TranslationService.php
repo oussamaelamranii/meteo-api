@@ -27,7 +27,7 @@ class TranslationService implements TranslationServiceInterface
                 'model' => 'gpt-4o-mini',
                 'messages' => [
                     ['role' => 'system', 'content' => 'You are a translator that converts English sentences to Moroccan Darija.'],
-                    ['role' => 'user', 'content' => "Translate this to Moroccan Darija: $text"]
+                    ['role' => 'user', 'content' => "Translate this to Moroccan Darija but i need the sentence in arabic not french: $text"]
                 ]
             ]
         ]);

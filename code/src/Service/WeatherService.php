@@ -20,7 +20,7 @@ class WeatherService
     {
         return $this->apiBaseUrl
             . "?latitude={$latitude}&longitude={$longitude}"
-            . "&current_weather=true"
+            . "&current=temperature_2m,wind_speed_10m,relative_humidity_2m,precipitation,rain,wind_direction_10m"
             . "&hourly=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,soil_temperature_18cm,soil_moisture_9_to_27cm"
             . "&daily=temperature_2m_max,temperature_2m_min,sunshine_duration"
             . "&timezone=auto";
@@ -50,9 +50,9 @@ class WeatherService
                         if ($response->getStatusCode() !== 200) {
                             throw new \Exception("Erreur lors de la recuperation des donnees meteo : " . $response->getContent(false));
                         }
-                        $land['weather'] = $response->toArray();
+                        $land['Meteo'] = $response->toArray();
                     }catch (\Exception $exception){
-                        $land['weather'] = ['error' => $exception->getMessage()];
+                        $land['Meteo'] = ['error' => $exception->getMessage()];
                     }
                 }
             }

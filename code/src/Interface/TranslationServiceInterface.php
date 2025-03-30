@@ -5,5 +5,6 @@
     {
         public function translateToDarija(string $text): string;
         public function translateToFrench(string $text): string;
+        
     }
 ?>
