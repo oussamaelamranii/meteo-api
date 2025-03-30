@@ -11,9 +11,14 @@ use Doctrine\ORM\EntityManagerInterface;
 
     class RedAlertService implements RedAlertServiceInterface
     {
-        
-        public function checkRedAlert(Advice $advice , float $currentTemp): bool
+        //! =============== fix ===========
+        public function checkRedAlert(Advice $advice , ?float $currentTemp): bool
         {
+
+            if($currentTemp == null){
+                return false;
+            }
+
             $plant = $advice->getPlant();
 
             if (!$plant) {

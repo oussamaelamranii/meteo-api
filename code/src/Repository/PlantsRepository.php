@@ -16,6 +16,26 @@ class PlantsRepository extends ServiceEntityRepository
         parent::__construct($registry, Plants::class);
     }
 
+    public function findByLandId(int $landId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.lands', 'l')
+            ->where('l.id = :landId')
+            ->setParameter('landId', $landId)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findIdByName(string $name): ?int
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.id')
+            ->where('p.name = :name')
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->getSingleScalarResult(); // Returns the ID directly or throws an exception
+    }
+
 //    /**
 //     * @return Plants[] Returns an array of Plants objects
 //     */

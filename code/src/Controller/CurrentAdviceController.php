@@ -33,23 +33,21 @@ final class CurrentAdviceController extends AbstractController
     {   
 
         //* //////////////// this is the code that should be used  ! /////////////////////
-        //Fetch weather data for the user
-        // $weatherData = $this->CurrAdvice->getWeatherAllCache();
-        // // dd($weatherData);
+        // Fetch weather data for the user
+        $weatherData = $this->CurrAdvice->getWeatherAllCache();
+        // dd($weatherData);
 
-        // if (!$weatherData) {
-        //     return new JsonResponse(['error' => 'Failed to fetch weather data'], JsonResponse::HTTP_BAD_REQUEST);
-        // }
-        
+        if (!$weatherData) {
+            return new JsonResponse(['error' => 'Failed to fetch weather data'], JsonResponse::HTTP_BAD_REQUEST);
+        }
         //* //////////////////////////////////////////////////////////
 
         //! //////////////// Just for Testing ! /////////////////////
 
-        $jsonFile = $this->getParameter('kernel.project_dir') . '/var/CacheJson.json';
-        $weatherData = json_decode(file_get_contents($jsonFile), true);
+        // $jsonFile = $this->getParameter('kernel.project_dir') . '/var/CacheJson.json';
+        // $weatherData = json_decode(file_get_contents($jsonFile), true);
 
         //! //////////////// Just for Testing ! /////////////////////
-
 
         $userWeatherData = $this->CurrAdvice->getAllUsersWeather($weatherData);
 
@@ -109,19 +107,19 @@ final class CurrentAdviceController extends AbstractController
     {   
 
         //* //////////////// this is the code that should be used  ! /////////////////////
-        //Fetch weather data for the user
-        // $weatherData = $this->CurrAdvice->getWeatherAllCache();
-        // // dd($weatherData);
+        // Fetch weather data for the user
+        $weatherData = $this->CurrAdvice->getWeatherAllCache();
+        // dd($weatherData);
 
-        // if (!$weatherData) {
-        //     return new JsonResponse(['error' => 'Failed to fetch weather data'], JsonResponse::HTTP_BAD_REQUEST);
-        // }        
+        if (!$weatherData) {
+            return new JsonResponse(['error' => 'Failed to fetch weather data'], JsonResponse::HTTP_BAD_REQUEST);
+        }        
         //* //////////////////////////////////////////////////////////
 
 
         //! //////////////// Just for Testing ! /////////////////////
-                $jsonFile = $this->getParameter('kernel.project_dir') . '/var/CacheJson.json';
-                $weatherData = json_decode(file_get_contents($jsonFile), true);
+            // $jsonFile = $this->getParameter('kernel.project_dir') . '/var/CacheJson.json';
+            // $weatherData = json_decode(file_get_contents($jsonFile), true);
         //! //////////////// Just for Testing ! /////////////////////
 
 

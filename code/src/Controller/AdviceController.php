@@ -40,12 +40,12 @@ class AdviceController extends AbstractController{
         $this->RedAlertService = $RedAlertService;
     }
 
+
     // Get all plants
     #[Route("", methods: ["GET"])]
     public function index(): JsonResponse
     {
         $advices = $this->repo->findAll();
-
         return $this->json($advices);
     }
 
@@ -68,10 +68,11 @@ class AdviceController extends AbstractController{
     public function create(Request $request): JsonResponse
     {
 
-        // Ensure request is JSON
-        if ($request->getContentTypeFormat() !== 'json') {
-            return new JsonResponse(['error' => 'Unsupported Media Type'], Response::HTTP_UNSUPPORTED_MEDIA_TYPE);
-        }
+        // dd($request->getContentTypeFormat());
+        // // Ensure request is JSON or jsonId for postman (keep json after hosting)
+        // if ($request->getContentTypeFormat() !== 'jsonId') {
+        //     return new JsonResponse(['error' => 'Unsupported Media Type'], Response::HTTP_UNSUPPORTED_MEDIA_TYPE);
+        // }
 
         $data = json_decode($request->getContent(), true);
 
@@ -89,13 +90,22 @@ class AdviceController extends AbstractController{
             return new JsonResponse(['error' => 'Invalid plant_id'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Associate the LandPlant entity with the Advice entity
+        //? Associate the LandPlant entity with the Advice entity
         $advice->setLand($land);
         $advice->setPlant($plant);
         $advice->setMinTempC($data['min_temp_c']);
         $advice->setMaxTempC($data['max_temp_c']);
         
-        //! Bug !!!!!!!!!!!!!! Where can i get the current Tempeture from ? !!!!!!!!!!!!!!!! =======================================
+        
+        //? new weather attributes
+        $advice->setMinHumidity($data['min_humidity']);
+        $advice->setMaxHumidity($data['max_humidity']);
+        $advice->setMinPrecipitation($data['min_precipitation']);
+        $advice->setMaxPrecipitation($data['max_precipitation']);
+        $advice->setMinWindSpeed($data['min_wind_speed']);
+        $advice->setMaxWindSpeed($data['max_wind_speed']);
+
+        //! Bug !!!!!!!!!!!!!! ? !!!!!!!!!!!!!!!! =======================================
         // if($this->RedAlertService->checkRedAlert($advice , $currentTemp ? )){
         //     $advice->setRedAlert(true);
         // }
@@ -105,23 +115,27 @@ class AdviceController extends AbstractController{
             //? translation
             $translatedDarija = $this->translator->translateToDarija($data['advice_text_en']);
             $translatedFrench = $this->translator->translateToFrench($data['advice_text_en']);
-
-            //? TTSing here
-            $AudioPath = $this->tts->getAudio($translatedDarija);
             
-            $advice->setAudioPath($AudioPath);
-
-            $advice->setAdviceTextEn($data['advice_text_en'] ?? null);
+            $advice->setAdviceTextEn($data['advice_text_en']);
             $advice->setAdviceTextAr($translatedDarija);
             $advice->setAdviceTextFr($translatedFrench);
+
+
+            //? TTSing here
+            $AudioPathAr = $this->tts->getAudio($translatedDarija , 'ar');
+            $AudioPathFr = $this->tts->getAudio($translatedFrench , 'fr');
+            $AudioPathEn = $this->tts->getAudio($data['advice_text_en'] , 'en');
+            
+            $advice->setAudioPathAr($AudioPathAr);
+            $advice->setAudioPathFr($AudioPathFr);
+            $advice->setAudioPathEn($AudioPathEn);
         }
-        // $advice->setAdviceTextFr($data['advice_text_fr'] ?? null);
-        // $advice->setAdviceTextAr($data['advice_text_ar'] ?? null);
 
 
         //! Convert string to DateTimeImmutable
         $createdAt = isset($data['created_at']) ? new \DateTimeImmutable($data['created_at']) : new \DateTimeImmutable();
-        $advice->setCreatedAt($createdAt);
+        // dd($createdAt);
+        $advice->setCreatedAt($createdAt);  
 
         $this->em->persist($advice);
         $this->em->flush();
@@ -133,11 +147,15 @@ class AdviceController extends AbstractController{
             'advice_text_en' => $advice->getAdviceTextEn(),
             'advice_text_fr' => $advice->getAdviceTextFr(),
             'advice_text_ar' => $advice->getAdviceTextAr(),
-            'AudioPath' => $advice->getAudioPath(),
+            'AudioPathAr' => $advice->getAudioPathAr(),
+            'AudioPathFr' => $advice->getAudioPathFr(),
+            'AudioPathEn' => $advice->getAudioPathEn(),
             'RedAlert'=> $advice->isRedAlert(),
             'created_at' => $advice->getCreatedAt()->format('Y-m-d H:i:s'),
         ]);
     }
+
+
 
     // UPDATE Advice
     #[Route("/{id}", methods: ["PUT"])]
@@ -165,9 +183,13 @@ class AdviceController extends AbstractController{
             $translatedFrench = $this->translator->translateToFrench($data['advice_text_en']);
 
             //? TTSing here
-            $AudioPath = $this->tts->getAudio($translatedDarija);
+            $AudioPathAr = $this->tts->getAudio($translatedDarija , 'ar');
+            $AudioPathFr = $this->tts->getAudio($translatedDarija , 'fr');
+            $AudioPathEn = $this->tts->getAudio($translatedDarija , 'en');
             
-            $advice->setAudioPath($AudioPath);
+            $advice->setAudioPathAr($AudioPathAr);
+            $advice->setAudioPathFr($AudioPathFr);
+            $advice->setAudioPathEn($AudioPathEn);
     
             $advice->setAdviceTextAr($translatedDarija);
             $advice->setAdviceTextFr($translatedFrench);

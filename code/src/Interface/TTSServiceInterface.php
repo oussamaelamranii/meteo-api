@@ -4,7 +4,7 @@
 
     interface TTSServiceInterface
     {
-        public function getAudio(string $text): string;
+        public function getAudio(string $text , string $language): string;
     }
 
 ?>

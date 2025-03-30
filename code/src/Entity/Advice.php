@@ -8,7 +8,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AdviceRepository::class)]
-
 class Advice
 {
     
@@ -37,20 +36,50 @@ class Advice
     #[ORM\Column(type: Types::TEXT)]
     private ?string $advice_text_ar = null;
 
+    //! audio fr et ang ===========================
     #[ORM\Column(length: 255)]
-    private ?string $AudioPath = null;
+    private ?string $AudioPathAr = null;
+    
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $AudioPathFr = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $AudioPathEn = null;
 
-    //! this for when we fetch temp from api we check its range here
-    #[ORM\Column]
-    private ?int $min_temp_C = null;
-
-    #[ORM\Column]
-    private ?int $max_temp_C = null;
+    
 
     //! redAdvice (bool) alerts when aan advice is sensitive by sms , email , notif
     #[ORM\Column]
     private ?bool $RedAlert = false;
+
+    
+//! ====== Soil - midite - wind - rain - dbab =======
+    //! this for when we fetch temp from api we check its range here
+    #[ORM\Column]
+    private ?float $min_temp_C = null;
+
+    #[ORM\Column]
+    private ?float $max_temp_C = null;
+
+    #[ORM\Column]
+    private ?float $min_humidity = null;
+
+    #[ORM\Column]
+    private ?float $max_humidity = null;
+
+    #[ORM\Column]
+    private ?float $min_precipitation = null;
+
+    #[ORM\Column]
+    private ?float $max_precipitation = null;
+
+    #[ORM\Column]
+    private ?float $min_wind_speed = null;
+
+    #[ORM\Column]
+    private ?float $max_wind_speed = null;
+
+
 
 
     public function getId(): ?int {
@@ -123,14 +152,14 @@ class Advice
         return $this;
     }
 
-    public function getAudioPath(): ?string
+    public function getAudioPathAr(): ?string
     {
-        return $this->AudioPath;
+        return $this->AudioPathAr;
     }
 
-    public function setAudioPath(string $AudioPath): static
+    public function setAudioPathAr(string $AudioPathAr): static
     {
-        $this->AudioPath = $AudioPath;
+        $this->AudioPathAr = $AudioPathAr;
 
         return $this;
     }
@@ -268,5 +297,101 @@ class Advice
 
 
 //     
+
+public function getMinHumidity(): ?float
+{
+    return $this->min_humidity;
+}
+
+public function setMinHumidity(float $min_humidity): static
+{
+    $this->min_humidity = $min_humidity;
+
+    return $this;
+}
+
+public function getMaxHumidity(): ?float
+{
+    return $this->max_humidity;
+}
+
+public function setMaxHumidity(float $max_humidity): static
+{
+    $this->max_humidity = $max_humidity;
+
+    return $this;
+}
+
+public function getMinPrecipitation(): ?float
+{
+    return $this->min_precipitation;
+}
+
+public function setMinPrecipitation(float $min_precipitation): static
+{
+    $this->min_precipitation = $min_precipitation;
+
+    return $this;
+}
+
+public function getMaxPrecipitation(): ?float
+{
+    return $this->max_precipitation;
+}
+
+public function setMaxPrecipitation(float $max_precipitation): static
+{
+    $this->max_precipitation = $max_precipitation;
+
+    return $this;
+}
+
+public function getMinWindSpeed(): ?float
+{
+    return $this->min_wind_speed;
+}
+
+public function setMinWindSpeed(float $min_wind_speed): static
+{
+    $this->min_wind_speed = $min_wind_speed;
+
+    return $this;
+}
+
+public function getMaxWindSpeed(): ?float
+{
+    return $this->max_wind_speed;
+}
+
+public function setMaxWindSpeed(float $max_wind_speed): static
+{
+    $this->max_wind_speed = $max_wind_speed;
+
+    return $this;
+}
+
+public function getAudioPathFr(): ?string
+{
+    return $this->AudioPathFr;
+}
+
+public function setAudioPathFr(?string $AudioPathFr): static
+{
+    $this->AudioPathFr = $AudioPathFr;
+
+    return $this;
+}
+
+public function getAudioPathEn(): ?string
+{
+    return $this->AudioPathEn;
+}
+
+public function setAudioPathEn(?string $AudioPathEn): static
+{
+    $this->AudioPathEn = $AudioPathEn;
+
+    return $this;
+}
     
 }

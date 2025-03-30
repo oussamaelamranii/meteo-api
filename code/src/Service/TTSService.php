@@ -4,28 +4,44 @@ namespace App\Service;
 
 use App\Interface\TTSServiceInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class TTSService implements TTSServiceInterface
 {
     private $client;
     private $apiKey;
     private $apiBaseUrl;
-    private $voiceId;
 
     public function __construct(HttpClientInterface $client)
     {
         $this->client = $client;
         $this->apiKey = $_ENV['TTS_API_KEY'];
         $this->apiBaseUrl = $_ENV['TTS_API_URL'];
-        $this->voiceId = "ismail";
     }
 
-    public function getAudio(string $text): string
+    public function getAudio(string $text , string $language): string
     {
+
+            // Define voice IDs for each language
+            $voiceMap = [
+                'en' => 'noel',
+                'fr' => 'raphael',
+                'ar' => 'ismail'
+            ];
+
+            // Validate language choice
+            if (!isset($voiceMap[$language])) {
+                return new JsonResponse([
+                    'error' => 'Language not supported',
+                    'supported_languages' => array_keys($voiceMap),
+                ], JsonResponse::HTTP_NOT_FOUND);
+            }
+
         $response = $this->client->request('POST', "{$this->apiBaseUrl}/v1/audio/speech", [
             'json' => [
                 'input' => "<speak>{$text}</speak>",
-                'voice_id' => $this->voiceId,
+                'voice_id' => $voiceMap[$language],
+                'model' => 'simba-multilingual',
                 'audio_format' => "mp3",
             ],
             'headers' => [
