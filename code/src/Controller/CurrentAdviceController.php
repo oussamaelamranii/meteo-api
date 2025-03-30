@@ -3,83 +3,100 @@
 namespace App\Controller;
 
 use App\Repository\AdviceRepository;
-use App\Repository\FarmRepository;
-use App\Repository\LandPlantsRepository;
-use App\Repository\LandRepository;
+use App\Repository\PlantsRepository;
+use App\Service\CurrentWeatherService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/api/current-advice')]
 final class CurrentAdviceController extends AbstractController
 {
-    private HttpClientInterface $httpClient;
-    private LandRepository $landRepo;
     private AdviceRepository $adviceRepo;
-    private FarmRepository $farmRepo;
+    private PlantsRepository $plantRepo;
+    private CurrentWeatherService $CurrAdvice;
 
-    public function __construct(HttpClientInterface $httpClient , LandRepository $landRepo ,AdviceRepository $adviceRepo, FarmRepository $farmRepo) {
-        $this->httpClient = $httpClient;
-        $this->landRepo = $landRepo;
+    public function __construct(
+                        AdviceRepository $adviceRepo, 
+                        CurrentWeatherService $CurrAdvice,
+                        PlantsRepository $plantRepo
+                        ) {
+
         $this->adviceRepo = $adviceRepo;
-        $this->farmRepo = $farmRepo;
+        $this->CurrAdvice = $CurrAdvice;
+        $this->plantRepo = $plantRepo;
     }
 
 
-    //! change implementation to many temps (json will return farm => lands => temp in each land)
-    #[Route('/{userId}', methods:['GET'])]
-    public function getCurrentAdvice(int $userId): JsonResponse
-    {
-        //? 1- Fetch weather for a user (on suppose that Tempeture is same for all lands) =====
-        $weatherData = $this->fetchWeatherFromApi($userId);
+    #[Route('/all', methods:['GET'] , priority:1)]
+    public function getCurrentAdviceForAllUsers(): JsonResponse
+    {   
 
-        if (!$weatherData || !isset($weatherData['temperature'])) {
-            return new JsonResponse(['error' => 'Failed to fetch weather data'], JsonResponse::HTTP_BAD_REQUEST);
-        }
+        //* //////////////// this is the code that should be used  ! /////////////////////
+        //Fetch weather data for the user
+        // $weatherData = $this->CurrAdvice->getWeatherAllCache();
+        // // dd($weatherData);
 
-        //! select based on ayman's Json 
-        $currentTemp = $weatherData['temperature'];
+        // if (!$weatherData) {
+        //     return new JsonResponse(['error' => 'Failed to fetch weather data'], JsonResponse::HTTP_BAD_REQUEST);
+        // }
+        
+        //* //////////////////////////////////////////////////////////
+
+        //! //////////////// Just for Testing ! /////////////////////
+
+        $jsonFile = $this->getParameter('kernel.project_dir') . '/var/CacheJson.json';
+        $weatherData = json_decode(file_get_contents($jsonFile), true);
+
+        //! //////////////// Just for Testing ! /////////////////////
 
 
-        //? Find farm by user ID
-        $farm = $this->farmRepo->findOneBy(['userId' => $userId]);
+        $userWeatherData = $this->CurrAdvice->getAllUsersWeather($weatherData);
 
-        if (!$farm) {
-            return $this->json(['error' => 'No farm found for this user'], JsonResponse::HTTP_NOT_FOUND);
-        }
+        // dd($userWeatherData);
 
-        //? 2️- Find user's lands ======
-        $lands = $farm->getLands();
-
-        if (count($lands) === 0) {
-            return $this->json(['error' => 'No lands found for this user'], JsonResponse::HTTP_NOT_FOUND);
+        if (empty($userWeatherData)) {
+            return $this->json(['error' => 'No weather data found for this user'], JsonResponse::HTTP_NOT_FOUND);
         }
 
         $adviceList = [];
 
-        foreach($lands as $land){
-            $plants = $land->getPlants();
+        foreach ($userWeatherData as $landWeather) {
+            
+            // dd($landWeather);
 
-            foreach($plants as $plant){
+            $userId = $landWeather['user_id'];
+            $farmId = $landWeather['farm_id'];
+            $landId = $landWeather['land_id'];
+            $humidity = $landWeather['humidity'];
+            $precipitation = $landWeather['precipitation'];
+            $windSpeed = $landWeather['wind_speed'];
+            $temperature = $landWeather['temperature'];
 
-                // Get advice using land_plant_id
-                $advices = $this->adviceRepo->findByTemperatureRange($land->getId() , $plant->getId() , $currentTemp);
 
-                foreach ($advices as $advice) {
-                    $adviceList[] = [
-                        'land_id' => $land->getId(),
-                        'plant_id' => $plant->getId(),
-                        'plant_name' => $plant->getName(),
-                        'temp' => $currentTemp,
-                        'advice_text_en' => $advice->getAdviceTextEn(),
-                        'advice_text_fr' => $advice->getAdviceTextFr(),
-                        'advice_text_ma' => $advice->getAdviceTextAr(),
-                        'AudioPath'=> $advice->getAudioPath(),
-                        'RedAlert' => $advice->isRedAlert()
-                    ];
-                }
+            $advices = $this->adviceRepo->findByWeatherConditions(
+                $landId, 
+                $temperature, 
+                $humidity, 
+                $precipitation, 
+                $windSpeed
+            );
+
+
+            foreach ($advices as $advice) {
+                $adviceList[] = [
+                    'land_id' => $landId,
+                    'plant_id' => $advice->getPlant()->getId(),
+                    'humidity' => $humidity,
+                    'precipitation' => $precipitation,
+                    'wind_speed' => $windSpeed,
+                    'temperature' => $temperature,
+                    'advice_text_en' => $advice->getAdviceTextEn(),
+                    'advice_text_fr' => $advice->getAdviceTextFr(),
+                    'advice_text_ma' => $advice->getAdviceTextAr(),
+                    'AudioPathAr' => $advice->getAudioPathAr(),
+                    'RedAlert' => $advice->isRedAlert(),
+                ];
             }
         }
 
@@ -87,29 +104,78 @@ final class CurrentAdviceController extends AbstractController
     }
 
 
+    #[Route('/{userId}', methods:['GET'], requirements: ['userId' => '\d+'])]
+    public function getCurrentAdviceForUser(int $userId): JsonResponse
+    {   
 
-    //! put in service 
-    private function fetchWeatherFromApi(int $userId): ?array
-    {
-        // $weatherApiUrl = "ayman's api/$userId";
+        //* //////////////// this is the code that should be used  ! /////////////////////
+        //Fetch weather data for the user
+        // $weatherData = $this->CurrAdvice->getWeatherAllCache();
+        // // dd($weatherData);
 
-        // try {
-        //     $response = $this->httpClient->request('GET', $weatherApiUrl);
-        //     return $response->toArray();
+        // if (!$weatherData) {
+        //     return new JsonResponse(['error' => 'Failed to fetch weather data'], JsonResponse::HTTP_BAD_REQUEST);
+        // }        
+        //* //////////////////////////////////////////////////////////
 
-        // } catch (\Exception $e) {
-        //     return ['errors :' => $e];
-        // }
 
-        $weatherData = [
-                "temperature" => 10,
-                "humidity" => 60,
-                "wind_speed" => 5.2,
-                "condition" => "Sunny"
-        ];
-        
-        return $weatherData;
-    
+        //! //////////////// Just for Testing ! /////////////////////
+                $jsonFile = $this->getParameter('kernel.project_dir') . '/var/CacheJson.json';
+                $weatherData = json_decode(file_get_contents($jsonFile), true);
+        //! //////////////// Just for Testing ! /////////////////////
+
+
+        $userWeatherData = $this->CurrAdvice->filterWeatherByUserId($weatherData, $userId);
+
+        // dd($userWeatherData);
+
+        if (empty($userWeatherData)) {
+            return $this->json(['error' => 'No weather data found for this user'], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $adviceList = [];
+
+        foreach ($userWeatherData as $landWeather) {
+            // dd($landWeather);
+
+            $userId = $landWeather['user_id'];
+            $farmId = $landWeather['farm_id'];
+            $landId = $landWeather['land_id'];
+            $plantId = $landWeather['plant_id'];
+            $humidity = $landWeather['humidity'];
+            $precipitation = $landWeather['precipitation'];
+            $windSpeed = $landWeather['wind_speed'];
+            $temperature = $landWeather['temperature'];
+
+
+            $advices = $this->adviceRepo->findByWeatherConditions(
+                $landId, 
+                $temperature, 
+                $humidity, 
+                $precipitation, 
+                $windSpeed
+            );
+
+            foreach ($advices as $advice) {
+                $adviceList[] = [
+                    'land_id' => $landId,
+                    'plant_id' =>$advice->getPlant()->getId(),
+                    'humidity' => $humidity,
+                    'precipitation' => $precipitation,
+                    'wind_speed' => $windSpeed,
+                    'temperature' => $temperature,
+                    'advice_text_en' => $advice->getAdviceTextEn(),
+                    'advice_text_fr' => $advice->getAdviceTextFr(),
+                    'advice_text_ma' => $advice->getAdviceTextAr(),
+                    'AudioPathAr' => $advice->getAudioPathAr(),
+                    'RedAlert' => $advice->isRedAlert(),
+                ];
+            }
+        }
+
+        return $this->json($adviceList);
     }
+
+
 
 }

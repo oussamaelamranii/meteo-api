@@ -50,9 +50,9 @@ class WeatherService
                         if ($response->getStatusCode() !== 200) {
                             throw new \Exception("Erreur lors de la recuperation des donnees meteo : " . $response->getContent(false));
                         }
-                        $land['weather'] = $response->toArray();
+                        $land['Meteo'] = $response->toArray();
                     }catch (\Exception $exception){
-                        $land['weather'] = ['error' => $exception->getMessage()];
+                        $land['Meteo'] = ['error' => $exception->getMessage()];
                     }
                 }
             }
