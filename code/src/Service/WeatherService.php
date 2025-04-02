@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use phpDocumentor\Reflection\Types\Boolean;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -10,11 +9,12 @@ class WeatherService
 {
     private HttpClientInterface $client;
     private string $apiBaseUrl;
-
-    public function __construct(HttpClientInterface $client, ParameterBagInterface $params)
+    private UserService $userService;
+    public function __construct(HttpClientInterface $client, ParameterBagInterface $params, UserService $userService)
     {
         $this->client = $client;
         $this->apiBaseUrl = $params->get('WEATHER_API_URL');
+        $this->userService = $userService;
     }
     public function buildWeatherApiUrl(float $latitude, float $longitude): string
     {
@@ -27,32 +27,32 @@ class WeatherService
     }
     public function getWeather(): array
     {
-        $fakeJson = __DIR__ . '/../../FakeJSON.json';
-        if(!file_exists($fakeJson)) {
-            throw new \RuntimeException("Erreur : fichier n'existe pas");
-        }
-        $jsonData = file_get_contents($fakeJson);
-        $data = json_decode($jsonData, true);
-
-        if(!isset($data['Users']) || !is_array($data['Users'])) {
+//        $fakeJson = __DIR__ . '/../../FakeJSON.json'; // 5 lands * 2 farms * 20 users
+//        if(!file_exists($fakeJson)) {
+//            throw new \RuntimeException("Erreur : fichier n'existe pas");
+//        }
+//        $jsonData = file_get_contents($fakeJson);
+//        $dataF = json_decode($jsonData, true);
+        $data = $this->userService->getUsers();
+        if(!isset($data['users']) || !is_array($data['users'])) {
             throw new \RuntimeException("Erreur : donnees invalides! ");
         }
-        foreach ($data['Users'] as &$user)
+        foreach ($data['users'] as &$user)
         {
-            foreach($user['Farms'] as &$farm)
+            foreach($user['farms'] as &$farm)
             {
-                foreach($farm['Lands'] as &$land)
+                foreach($farm['lands'] as &$land)
                 {
-                    $latitude = $land['CenterX'];
-                    $longitude = $land['CenterY'];
+                    $latitude = $land['centerX'];
+                    $longitude = $land['centerY'];
                     try{
                         $response = $this->client->request('GET', $this->buildWeatherApiUrl($latitude, $longitude));
                         if ($response->getStatusCode() !== 200) {
                             throw new \Exception("Erreur lors de la recuperation des donnees meteo : " . $response->getContent(false));
                         }
-                        $land['Meteo'] = $response->toArray();
+                        $land['weather'] = $response->toArray();
                     }catch (\Exception $exception){
-                        $land['Meteo'] = ['error' => $exception->getMessage()];
+                        $land['weather'] = ['error' => $exception->getMessage()];
                     }
                 }
             }
