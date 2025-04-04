@@ -83,6 +83,8 @@ final class CurrentAdviceController extends AbstractController
 
             foreach ($advices as $advice) {
                 $adviceList[] = [
+                    'user_id' => $userId,
+                    'farm_id' => $farmId,
                     'land_id' => $landId,
                     'plant_id' => $advice->getPlant()->getId(),
                     'humidity' => $humidity,
@@ -156,6 +158,7 @@ final class CurrentAdviceController extends AbstractController
 
             foreach ($advices as $advice) {
                 $adviceList[] = [
+                    'user_id' => $userId,
                     'land_id' => $landId,
                     'plant_id' =>$advice->getPlant()->getId(),
                     'humidity' => $humidity,
@@ -165,6 +168,8 @@ final class CurrentAdviceController extends AbstractController
                     'advice_text_en' => $advice->getAdviceTextEn(),
                     'advice_text_fr' => $advice->getAdviceTextFr(),
                     'advice_text_ma' => $advice->getAdviceTextAr(),
+                    'AudioPathEn' => $advice->getAudioPathEn(),
+                    'AudioPathFr' => $advice->getAudioPathFr(),
                     'AudioPathAr' => $advice->getAudioPathAr(),
                     'RedAlert' => $advice->isRedAlert(),
                 ];

@@ -45,6 +45,7 @@ class CurrentWeatherService
     public function getCurrentTimeIndex(array $landData): ?int
     {
         $currentDateTime = new \DateTime('now', new \DateTimeZone('UTC')); 
+        $currentDateTime->modify('+1 day');
         // $currentDateTime->modify('+1 hour'); //! avoid Nulls 
         $formattedTime = $currentDateTime->format('Y-m-d\TH:00');
         // $formattedTime = '2025-03-20T11:00';
@@ -96,6 +97,49 @@ class CurrentWeatherService
                         'temperature' => $meteoData['hourly']['temperature_2m'][$currentTimeIndex] ?? null,
                         'precipitation' => $meteoData['hourly']['precipitation'][$currentTimeIndex] ?? null,
                         'wind_speed' => $meteoData['hourly']['wind_speed_10m'][$currentTimeIndex] ?? null,
+                    ];
+                }
+            }
+        }
+
+        return $weatherDetails;
+    }
+    
+
+
+    public function filterWeatherByUserIdForWeekly(array $weatherData, string $userId): array
+    {
+            $weatherDetails = [];
+
+            if (!isset($weatherData['Users'])) {
+                return [];
+            }
+
+            foreach ($weatherData['Users'] as $user) {
+                if ($user['UserId'] != $userId) {
+                    continue;
+                }
+        
+                foreach ($user['Farms'] as $farm) {
+                    $farmId = $farm['FarmId'];
+        
+                    foreach ($farm['Lands'] as $land) {
+                        $landId = $land['LandId'];
+        
+                        if (!isset($land['Meteo'])) {
+                            continue;
+                        }
+
+                        $meteoData = $land['Meteo'];
+                        $plantId = $land['PlantId'];
+
+
+                    $weatherDetails[] = [
+                        'user_id' => $userId,
+                        'farm_id' => $farmId,
+                        'land_id' => $landId,
+                        'plant_id' => $plantId,                    
+                        'dates' => $meteoData['daily']['time']                 
                     ];
                 }
             }

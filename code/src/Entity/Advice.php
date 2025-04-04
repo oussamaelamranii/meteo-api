@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: AdviceRepository::class)]
 class Advice
 {
-    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type:"integer")]
@@ -55,35 +54,52 @@ class Advice
     
 //! ====== Soil - midite - wind - rain - dbab =======
     //! this for when we fetch temp from api we check its range here
-    #[ORM\Column]
+    #[ORM\Column(type: 'float', nullable: true)]
     private ?float $min_temp_C = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'float', nullable: true)]
     private ?float $max_temp_C = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'float', nullable: true)]
     private ?float $min_humidity = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'float', nullable: true)]
     private ?float $max_humidity = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'float', nullable: true)]
     private ?float $min_precipitation = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'float', nullable: true)]
     private ?float $max_precipitation = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'float', nullable: true)]
     private ?float $min_wind_speed = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'float', nullable: true)]
     private ?float $max_wind_speed = null;
+
+
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $advice_date = null;
 
 
 
 
     public function getId(): ?int {
         return $this->id;
+    }
+
+    // Getter
+    public function getAdviceDate(): ?\DateTime
+    {
+        return $this->advice_date;
+    }
+
+    // Setter
+    public function setAdviceDate(?\DateTime $advice_date): self
+    {
+        $this->advice_date = $advice_date;
+        return $this;
     }
 
     public function getLand(): ?Land {

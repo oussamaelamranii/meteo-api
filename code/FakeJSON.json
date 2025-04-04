@@ -11,7 +11,12 @@
             {
               "LandId": 101,
               "Name": "Land A",
-              "PlantId": 123,
+              "PlantId": 1,
+              
+              "Meteo":{
+                
+              },
+              
               "CenterX": 34.56,
               "CenterY": 78.90,
               "Corners": [
@@ -43,7 +48,7 @@
             {
               "LandId": 103,
               "Name": "Land C",
-              "PlantId": 125,
+              "PlantId": 2,
               "CenterX": 9.12,
               "CenterY": 34.56,
               "Corners": [
@@ -68,7 +73,7 @@
             {
               "LandId": 104,
               "Name": "Land D",
-              "PlantId": 126,
+              "PlantId": 3,
               "CenterX": 56.78,
               "CenterY": 60.12,
               "Corners": [
