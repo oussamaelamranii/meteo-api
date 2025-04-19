@@ -105,8 +105,10 @@ class AdviceService {
             
             //? translation
             $translatedDarija = $this->translator->translateToDarija($AdviceText);
+            sleep(10);
             $translatedFrench = $this->translator->translateToFrench($AdviceText);
-            
+
+
             $advice->setAdviceTextEn($AdviceText);
             $advice->setAdviceTextAr($translatedDarija);
             $advice->setAdviceTextFr($translatedFrench);
@@ -114,7 +116,9 @@ class AdviceService {
 
             //? TTSing here
             $AudioPathFr = $this->tts->getAudio($translatedFrench , 'fr');
+            sleep(5);
             $AudioPathAr = $this->tts->getAudio($translatedDarija , 'ar');
+            sleep(5);
             $AudioPathEn = $this->tts->getAudio($AdviceText , 'en');
             
             $advice->setAudioPathAr($AudioPathAr);
@@ -202,6 +206,7 @@ class AdviceService {
             
             //? translation
             $translatedDarija = $this->translator->translateToDarija($AdviceText);
+            sleep(5);
             $translatedFrench = $this->translator->translateToFrench($AdviceText);
             
             $advice->setAdviceTextEn($AdviceText);

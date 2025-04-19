@@ -58,35 +58,43 @@ final class AdviceGenerationController extends AbstractController
             return new JsonResponse(['error' => 'Invalid weather data format'], JsonResponse::HTTP_BAD_REQUEST);
         }
 
+        //* here split /////////////////////////////////////////////////////
         $dailyData = $userWeatherConditions;
         $generatedAdvices = [];
-
-        // Loop through the daily weather data
+        
+        // Step 1: prepare 7-day weather data
+        $weeklyWeather = [];
         foreach ($dailyData['time'] as $index => $date) {
-            // Extract the weather conditions for this day
-            $dailyWeather = [
+            $weeklyWeather[] = [
                 'date' => $date,
                 'temperature_max' => $dailyData['temperature_2m_max'][$index] ?? null,
                 'wind_speed_max' => $dailyData['wind_speed_10m_max'][$index] ?? null,
                 'precipitation_sum' => $dailyData['precipitation_sum'][$index] ?? null
             ];
-
-            // var_dump($dailyWeather);
-
-            // Generate advice for this day's weather
-            $generatedAdvice = $this->adviceGeneration->GenerateWeeklySpecificAdvice($dailyWeather, $plant);
-
-            // Insert the advice into the database
-            $advice = $this->AdviceService->InsertWeeklySpecificAdvice($landId, $plant, $dailyWeather, $generatedAdvice);
-
-            // Store response for final output
-            $adviceData = json_decode($advice->getContent(), true);            
+        }
+        
+        // Step 2: call OpenAI once
+        $openAiResponse = $this->adviceGeneration->GenerateWeeklySpecificAdvice($weeklyWeather, $plant);
+        
+        // Step 3: split into 7 advices
+        $advices = explode('|||', $openAiResponse);
+        
+        // Step 4: save each advice to DB and prepare output
+        foreach ($weeklyWeather as $i => $dailyWeather) {
+            $adviceText = trim($advices[$i] ?? 'No advice');
+        
+            // Save to DB
+            $advice = $this->AdviceService->InsertWeeklySpecificAdvice($landId, $plant, $dailyWeather, $adviceText);
             
-            sleep(12);
+            sleep(30);
+        
+            $adviceData = json_decode($advice->getContent(), true); 
 
+            // dump($adviceData);
+        
             $generatedAdvices[] = [
-                'date' => $date,
-                'advice_en' => $generatedAdvice,
+                'date' => $dailyWeather['date'],
+                'advice_en' => $adviceText,
                 'advice_fr' => $adviceData['adviceTextFr'],
                 'advice_ar' => $adviceData['adviceTextAr'],
                 'audioPathEn' => $adviceData['audioPathEn'],
@@ -100,9 +108,10 @@ final class AdviceGenerationController extends AbstractController
         $this->adviceRepo->deleteOldAdvices();
 
         return $this->json([
-            'Plant' => $plant,
-            'Land' => $landId,
             'User' => $userId,
+            'Farm' => $farmId,
+            'Land' => $landId,
+            'Plant' => $plant,
             'WeatherConditions' => $userWeatherConditions,
             'GeneratedAdvices' => $generatedAdvices
         ]);
@@ -143,9 +152,10 @@ final class AdviceGenerationController extends AbstractController
         // dd(json_decode($advice->getContent(), true));
 
         return $this->json([
-            'Plant'=> $plant,
-            'Land'=> $landId,
-            'User'=> $userId,
+            'User' => $userId,
+            'Farm' => $farmId,
+            'Land' => $landId,
+            'Plant' => $plant,
             'WeatherConditions'=> $userWeatherConditions,
             'Advice_en'=> $GeneratedAdvice,
             'Advice_fr'=> $data['adviceTextFr'],

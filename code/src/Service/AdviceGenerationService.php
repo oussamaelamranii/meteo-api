@@ -19,6 +19,28 @@ class AdviceGenerationService implements AdviceGenerationServiceInterface
     }
 
 
+    public function GenerateWideRangeAdvice(string $description): string
+    {
+
+        $prompt = "You are an expert agricultural advisor. A weather change is going to hit the land: '$description'. Based on this change, provide a short and direct farming advice for the farmer, like 'A high-speed wind will hit your land, better cover them.' Make sure the advice is actionable and to the point, and always start by saying 'Warning : A {put the weather change from description here}' then give the advice";
+
+        $response = $this->client->request('POST', $_ENV['OPENAI_API_URL'], [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'model' => 'gpt-4o-mini',
+                'messages' => [
+                    ['role' => 'system', 'content' => 'You are a professional agricultural advisor. Provide short, clear, and actionable advice based on the weather change described.'],
+                    ['role' => 'user', 'content' => $prompt]
+                ]
+            ]
+        ]);
+
+        $data = $response->toArray();
+        return $data['choices'][0]['message']['content'] ?? 'Generation failed';
+    }
 
 
 
@@ -79,18 +101,22 @@ class AdviceGenerationService implements AdviceGenerationServiceInterface
         return $data['choices'][0]['message']['content'] ?? 'Generation failed';
     }
 
-    public function GenerateWeeklySpecificAdvice(array $WeatherConditions , string $plant): string
+
+    public function GenerateWeeklySpecificAdvice(array $weeklyWeather, string $plant): string
     {
+        $prompt = "You are an expert agricultural advisor. I will give you the weather forecast for the next 7 days. 
+    Each day has its temperature, precipitation, and wind speed. For each day, provide a short, clear, and direct advice (3-5 sentences max) on how to care for the plant **$plant**. 
+    Separate each day's advice with '|||'.
 
-        $temp = $WeatherConditions['temperature_max'];
-        $precipitation = $WeatherConditions['precipitation_sum'];
-        $windSpeed = $WeatherConditions['wind_speed_max'];
+    ";
 
-        $prompt = "You are an expert agricultural advisor. Based on the following weather conditions:
-            - Temperature: $temp °C
-            - Precipitation: $precipitation mm
-            - Wind Speed: $windSpeed km/h    
-            Provide a farming advice on how to care for the plant **$plant** in these conditions,keep it short, clear and direct ";
+        foreach ($weeklyWeather as $i => $day) {
+            $prompt .= "Day " . ($i + 1) . ":
+            - Temperature: {$day['temperature_max']} °C
+            - Precipitation: {$day['precipitation_sum']} mm
+            - Wind Speed: {$day['wind_speed_max']} km/h
+    ";
+        }
 
         $response = $this->client->request('POST', $_ENV['OPENAI_API_URL'], [
             'headers' => [
@@ -100,16 +126,49 @@ class AdviceGenerationService implements AdviceGenerationServiceInterface
             'json' => [
                 'model' => 'gpt-4o-mini',
                 'messages' => [
-                    ['role' => 'system', 'content' => 'You are a professional farmer providing plant care advice, Your response should be **short (3-5 sentences), clear, and free of unnecessary formatting like "\\n".**'],
+                    ['role' => 'system', 'content' => 'You are a professional farmer giving plant care advice. Reply with 7 short advices separated by "|||".'],
                     ['role' => 'user', 'content' => $prompt]
                 ]
             ]
         ]);
 
         $data = $response->toArray();
-        // dump($data);
         return $data['choices'][0]['message']['content'] ?? 'Generation failed';
     }
+
+
+
+    //! public function GenerateWeeklySpecificAdvice(array $WeatherConditions , string $plant): string
+    // {
+
+    //     $temp = $WeatherConditions['temperature_max'];
+    //     $precipitation = $WeatherConditions['precipitation_sum'];
+    //     $windSpeed = $WeatherConditions['wind_speed_max'];
+
+    //     $prompt = "You are an expert agricultural advisor. Based on the following weather conditions:
+    //         - Temperature: $temp °C
+    //         - Precipitation: $precipitation mm
+    //         - Wind Speed: $windSpeed km/h    
+    //         Provide a farming advice on how to care for the plant **$plant** in these conditions,keep it short, clear and direct ";
+
+    //     $response = $this->client->request('POST', $_ENV['OPENAI_API_URL'], [
+    //         'headers' => [
+    //             'Authorization' => 'Bearer ' . $this->apiKey,
+    //             'Content-Type' => 'application/json',
+    //         ],
+    //         'json' => [
+    //             'model' => 'gpt-4o-mini',
+    //             'messages' => [
+    //                 ['role' => 'system', 'content' => 'You are a professional farmer providing plant care advice, Your response should be **short (3-5 sentences), clear, and free of unnecessary formatting like "\\n".**'],
+    //                 ['role' => 'user', 'content' => $prompt]
+    //             ]
+    //         ]
+    //     ]);
+
+    //     $data = $response->toArray();
+    //     // dump($data);
+    //     return $data['choices'][0]['message']['content'] ?? 'Generation failed';
+    // }
 
 
     public function filterWeatherByUserFarmLand(array $weatherData, ?string $userId = null, ?string $farmId = null, ?string $landId = null): array
