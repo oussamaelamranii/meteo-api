@@ -12,11 +12,6 @@
               "LandId": 101,
               "Name": "Land A",
               "PlantId": 1,
-              
-              "Meteo":{
-                
-              },
-              
               "CenterX": 34.56,
               "CenterY": 78.90,
               "Corners": [
