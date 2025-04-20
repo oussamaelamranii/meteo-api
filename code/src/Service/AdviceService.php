@@ -6,6 +6,7 @@ use App\Entity\Land;
 use App\Entity\Advice;
 use App\Entity\GeneralAdvice;
 use App\Entity\Plants;
+use App\Entity\WideRangeAdvice;
 use App\Repository\PlantsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -286,6 +287,73 @@ class AdviceService {
             'audioPathAr' => $advice->getAudioPathAr(),
             'audioPathFr' => $advice->getAudioPathFr(),
             'createdAt' => $advice->getCreatedAt()->format('Y-m-d H:i:s'),
+        ], Response::HTTP_OK);
+    }
+
+
+    public function InsertWideRangeAdvice(int $userId ,int $landId, string $AdviceText , string $description , string $AffectedArea): JsonResponse
+    {
+        // dd($WeatherConditions['date']);
+        $advice = new WideRangeAdvice();
+
+        //* translate and tts
+        if (!empty($AdviceText)) {
+            
+            //? translation
+            $translatedDarija = $this->translator->translateToDarija($AdviceText);
+            sleep(5);
+            $translatedFrench = $this->translator->translateToFrench($AdviceText);
+            
+            $advice->setAdviceTextEn($AdviceText);
+            $advice->setAdviceTextAr($translatedDarija);
+            $advice->setAdviceTextFr($translatedFrench);
+
+
+            //? TTSing here
+            $AudioPathFr = $this->tts->getAudio($translatedFrench , 'fr');
+            $AudioPathAr = $this->tts->getAudio($translatedDarija , 'ar');
+            $AudioPathEn = $this->tts->getAudio($AdviceText , 'en');
+            
+            $advice->setAudioPathAr($AudioPathAr);
+            $advice->setAudioPathFr($AudioPathFr);
+            $advice->setAudioPathEn($AudioPathEn);
+        }
+
+        //? set description
+        $advice->setDescription($description);
+
+
+        //? Set date
+        $adviceDate = new \DateTimeImmutable('today');
+        $advice->setAdviceDate($adviceDate);
+
+        
+        //? setting advice's land and user
+        $advice->setUserId($userId);
+        $advice->setLandId($landId);
+
+
+        //? set city
+        $advice->setAreaAffected($AffectedArea);
+
+        //! saving 
+        $this->em->persist($advice);
+        $this->em->flush();
+
+
+        return new JsonResponse([
+            'id' => $advice->getId(),
+            'userId' => $advice->getUserId(),
+            'landId' => $advice->getLandId(),
+            'description' => $advice->getDescription(),
+            'Area' => $advice->getAreaAffected(),
+            'adviceTextEn' => $advice->getAdviceTextEn(),
+            'adviceTextAr' => $advice->getAdviceTextAr(),
+            'adviceTextFr' => $advice->getAdviceTextFr(),
+            'audioPathEn' => $advice->getAudioPathEn(),
+            'audioPathAr' => $advice->getAudioPathAr(),
+            'audioPathFr' => $advice->getAudioPathFr(),
+            'adviceDate' => $advice->getAdviceDate(),
         ], Response::HTTP_OK);
     }
 
