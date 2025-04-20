@@ -83,6 +83,8 @@ final class CurrentAdviceController extends AbstractController
 
             foreach ($advices as $advice) {
                 $adviceList[] = [
+                    'user_id' => $userId,
+                    'farm_id' => $farmId,
                     'land_id' => $landId,
                     'plant_id' => $advice->getPlant()->getId(),
                     'humidity' => $humidity,
@@ -156,6 +158,7 @@ final class CurrentAdviceController extends AbstractController
 
             foreach ($advices as $advice) {
                 $adviceList[] = [
+                    'user_id' => $userId,
                     'land_id' => $landId,
                     'plant_id' =>$advice->getPlant()->getId(),
                     'humidity' => $humidity,
@@ -165,6 +168,8 @@ final class CurrentAdviceController extends AbstractController
                     'advice_text_en' => $advice->getAdviceTextEn(),
                     'advice_text_fr' => $advice->getAdviceTextFr(),
                     'advice_text_ma' => $advice->getAdviceTextAr(),
+                    'AudioPathEn' => $advice->getAudioPathEn(),
+                    'AudioPathFr' => $advice->getAudioPathFr(),
                     'AudioPathAr' => $advice->getAudioPathAr(),
                     'RedAlert' => $advice->isRedAlert(),
                 ];
@@ -174,6 +179,82 @@ final class CurrentAdviceController extends AbstractController
         return $this->json($adviceList);
     }
 
+
+
+    #[Route('/ByLand/{landId}', methods:['GET'], requirements: ['landId' => '\d+'])]
+    public function getCurrentAdviceForLand(int $landId): JsonResponse
+    {   
+
+        //* //////////////// this is the code that should be used  ! /////////////////////
+        // Fetch weather data for the user
+        $weatherData = $this->CurrAdvice->getWeatherAllCache();
+        // dd($weatherData);
+
+        if (!$weatherData) {
+            return new JsonResponse(['error' => 'Failed to fetch weather data'], JsonResponse::HTTP_BAD_REQUEST);
+        }        
+        //* //////////////////////////////////////////////////////////
+
+
+        //! //////////////// Just for Testing ! /////////////////////
+            // $jsonFile = $this->getParameter('kernel.project_dir') . '/var/CacheJson.json';
+            // $weatherData = json_decode(file_get_contents($jsonFile), true);
+        //! //////////////// Just for Testing ! /////////////////////
+
+
+        $userWeatherData = $this->CurrAdvice->filterWeatherByLandId($weatherData, $landId);
+
+        // dd($userWeatherData);
+
+        if (empty($userWeatherData)) {
+            return $this->json(['error' => 'No weather data found for this user'], JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $adviceList = [];
+
+        foreach ($userWeatherData as $landWeather) {
+            // dd($landWeather);
+
+            $userId = $landWeather['user_id'];
+            $farmId = $landWeather['farm_id'];
+            $landId = $landWeather['land_id'];
+            $plantId = $landWeather['plant_id'];
+            $humidity = $landWeather['humidity'];
+            $precipitation = $landWeather['precipitation'];
+            $windSpeed = $landWeather['wind_speed'];
+            $temperature = $landWeather['temperature'];
+
+
+            $advices = $this->adviceRepo->findByWeatherConditions(
+                $landId, 
+                $temperature, 
+                $humidity, 
+                $precipitation, 
+                $windSpeed
+            );
+
+            foreach ($advices as $advice) {
+                $adviceList[] = [
+                    'user_id' => $userId,
+                    'land_id' => $landId,
+                    'plant_id' =>$advice->getPlant()->getId(),
+                    'humidity' => $humidity,
+                    'precipitation' => $precipitation,
+                    'wind_speed' => $windSpeed,
+                    'temperature' => $temperature,
+                    'advice_text_en' => $advice->getAdviceTextEn(),
+                    'advice_text_fr' => $advice->getAdviceTextFr(),
+                    'advice_text_ma' => $advice->getAdviceTextAr(),
+                    'AudioPathEn' => $advice->getAudioPathEn(),
+                    'AudioPathFr' => $advice->getAudioPathFr(),
+                    'AudioPathAr' => $advice->getAudioPathAr(),
+                    'RedAlert' => $advice->isRedAlert(),
+                ];
+            }
+        }
+
+        return $this->json($adviceList);
+    }
 
 
 }

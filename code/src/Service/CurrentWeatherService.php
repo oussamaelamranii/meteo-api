@@ -45,6 +45,7 @@ class CurrentWeatherService
     public function getCurrentTimeIndex(array $landData): ?int
     {
         $currentDateTime = new \DateTime('now', new \DateTimeZone('UTC')); 
+        $currentDateTime->modify('+1 day');
         // $currentDateTime->modify('+1 hour'); //! avoid Nulls 
         $formattedTime = $currentDateTime->format('Y-m-d\TH:00');
         // $formattedTime = '2025-03-20T11:00';
@@ -97,6 +98,121 @@ class CurrentWeatherService
                         'precipitation' => $meteoData['hourly']['precipitation'][$currentTimeIndex] ?? null,
                         'wind_speed' => $meteoData['hourly']['wind_speed_10m'][$currentTimeIndex] ?? null,
                     ];
+                }
+            }
+        }
+
+        return $weatherDetails;
+    }
+
+
+    public function filterWeatherByLandId(array $weatherData, string $landId): array
+    {
+        $weatherDetails = [];
+
+        if (!isset($weatherData['Users'])) {
+            return [];
+        }
+
+        foreach ($weatherData['Users'] as $user) {
+            foreach ($user['Farms'] as $farm) {
+                foreach ($farm['Lands'] as $land) {
+                    if ($land['LandId'] != $landId || !isset($land['Meteo'])) {
+                        continue;
+                    }
+
+                    $currentTimeIndex = $this->getCurrentTimeIndex($land['Meteo']['hourly']);
+
+                    $weatherDetails[] = [
+                        'user_id' => $user['UserId'],
+                        'farm_id' => $farm['FarmId'],
+                        'land_id' => $landId,
+                        'plant_id' => $land['PlantId'],
+                        'humidity' => $land['Meteo']['hourly']['relative_humidity_2m'][$currentTimeIndex] ?? null,
+                        'temperature' => $land['Meteo']['hourly']['temperature_2m'][$currentTimeIndex] ?? null,
+                        'precipitation' => $land['Meteo']['hourly']['precipitation'][$currentTimeIndex] ?? null,
+                        'wind_speed' => $land['Meteo']['hourly']['wind_speed_10m'][$currentTimeIndex] ?? null,
+                    ];
+
+                    return $weatherDetails; // return early since we found the land
+                }
+            }
+        }
+
+        return $weatherDetails;
+    }
+    
+
+
+    public function filterWeatherByUserIdForWeekly(array $weatherData, string $userId): array
+    {
+            $weatherDetails = [];
+
+            if (!isset($weatherData['Users'])) {
+                return [];
+            }
+
+            foreach ($weatherData['Users'] as $user) {
+                if ($user['UserId'] != $userId) {
+                    continue;
+                }
+        
+                foreach ($user['Farms'] as $farm) {
+                    $farmId = $farm['FarmId'];
+        
+                    foreach ($farm['Lands'] as $land) {
+                        $landId = $land['LandId'];
+        
+                        if (!isset($land['Meteo'])) {
+                            continue;
+                        }
+
+                        $meteoData = $land['Meteo'];
+                        $plantId = $land['PlantId'];
+
+
+                    $weatherDetails[] = [
+                        'user_id' => $userId,
+                        'farm_id' => $farmId,
+                        'land_id' => $landId,
+                        'plant_id' => $plantId,                    
+                        'dates' => $meteoData['daily']['time']                 
+                    ];
+                }
+            }
+        }
+
+        return $weatherDetails;
+    }
+
+
+    public function filterWeatherByLandIdForWeekly(array $weatherData, string $landId): array
+    {
+        $weatherDetails = [];
+
+        if (!isset($weatherData['Users'])) {
+            return [];
+        }
+
+        foreach ($weatherData['Users'] as $user) {
+            foreach ($user['Farms'] as $farm) {
+                foreach ($farm['Lands'] as $land) {
+                    if ($land['LandId'] != $landId || !isset($land['Meteo'])) {
+                        continue;
+                    }
+
+                    $meteoData = $land['Meteo'];
+                    $plantId = $land['PlantId'];
+
+                    $weatherDetails[] = [
+                        'user_id' => $user['UserId'],
+                        'farm_id' => $farm['FarmId'],
+                        'land_id' => $landId,
+                        'plant_id' => $plantId,
+                        'dates' => $meteoData['daily']['time']
+                    ];
+
+                    return $weatherDetails; // Return once the matching land is found
                 }
             }
         }

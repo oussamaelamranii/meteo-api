@@ -105,10 +105,6 @@ class AdviceController extends AbstractController{
         $advice->setMinWindSpeed($data['min_wind_speed']);
         $advice->setMaxWindSpeed($data['max_wind_speed']);
 
-        //! Bug !!!!!!!!!!!!!! ? !!!!!!!!!!!!!!!! =======================================
-        // if($this->RedAlertService->checkRedAlert($advice , $currentTemp ? )){
-        //     $advice->setRedAlert(true);
-        // }
 
         if (!empty($data['advice_text_en'])) {
             

@@ -26,14 +26,15 @@ class TranslationService implements TranslationServiceInterface
             'json' => [
                 'model' => 'gpt-4o-mini',
                 'messages' => [
-                    ['role' => 'system', 'content' => 'You are a translator that converts English sentences to Moroccan Darija.'],
-                    ['role' => 'user', 'content' => "Translate this to Moroccan Darija but i need the sentence in arabic not french: $text"]
+                    ['role' => 'system', 'content' => 'You are a translator that converts English sentences to Moroccan Darija, '],
+                    ['role' => 'user', 'content' => "Translate this to Moroccan Darija, ensuring that all numerical digits (0-9) are converted into their full Arabic word equivalents instead of numeric symbols : $text"]
                 ]
             ]
         ]);
 
         $data = $response->toArray();
         return $data['choices'][0]['message']['content'] ?? 'Translation failed';
+        // return 'translated advice';
     }
 
     public function translateToFrench(string $text): string
@@ -54,5 +55,7 @@ class TranslationService implements TranslationServiceInterface
 
         $data = $response->toArray();
         return $data['choices'][0]['message']['content'] ?? 'Translation failed';
+        // return 'translated advice';
+
     }
 }

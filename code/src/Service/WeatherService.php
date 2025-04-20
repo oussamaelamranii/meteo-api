@@ -20,9 +20,10 @@ class WeatherService
     {
         return $this->apiBaseUrl
             . "?latitude={$latitude}&longitude={$longitude}"
-            . "&current=temperature_2m,apparent_temperature,wind_speed_10m,relative_humidity_2m,precipitation,cloud_cover,wind_direction_10m"
+
+            . "&current=temperature_2m,apparent_temperature,wind_speed_10m,relative_humidity_2m,precipitation,cloud_cover,wind_direction_10m,rain"
             . "&hourly=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,soil_temperature_18cm,soil_moisture_9_to_27cm,precipitation_probability,is_day,cloud_cover"
-            . "&daily=temperature_2m_max,temperature_2m_min,sunshine_duration,precipitation_sum,sunrise,sunset"
+            . "&daily=temperature_2m_max,temperature_2m_min,sunshine_duration,precipitation_sum,sunrise,sunset,wind_speed_10m_max"
             . "&timezone=auto";
     }
     public function getWeather(): array
