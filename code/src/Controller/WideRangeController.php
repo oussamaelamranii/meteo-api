@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 use App\Entity\Land;
+use App\Service\AdviceService;
 use App\Repository\LandRepository;
-use App\Service\AdviceGenerationService;
+use App\Repository\WideRangeAdviceRepository;
 use App\Service\CurrentWeatherService;
+use App\Service\AdviceGenerationService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,21 +19,26 @@ class WideRangeController extends AbstractController
 
     private CurrentWeatherService $CurrAdvice;
     private AdviceGenerationService $GenerateAdvice;
+    private AdviceService $AdviceService;
+    private WideRangeAdviceRepository $WideRangeRepo;
 
-    public function __construct(CurrentWeatherService $CurrAdvice , AdviceGenerationService $GenerateAdvice)
+    public function __construct(CurrentWeatherService $CurrAdvice , AdviceGenerationService $GenerateAdvice , AdviceService $AdviceService,WideRangeAdviceRepository $WideRangeRepo)
     {
         $this->CurrAdvice = $CurrAdvice;
         $this->GenerateAdvice = $GenerateAdvice;
+        $this->AdviceService = $AdviceService;
+        $this->WideRangeRepo = $WideRangeRepo;
     }
 
 
     #[Route('/check-lands', methods: ['POST'])]
-    public function checkWeather(Request $request, SerializerInterface $serializer): JsonResponse
+    public function checkWeather(Request $request): JsonResponse
     {
 
         $data = json_decode($request->getContent(), true);
         $geometry = $data['geometry'];
         $description = $data['description'];
+        $affectedArea = $data['affectedArea'];
 
         //generate advice
         $advice = $this->GenerateAdvice->GenerateWideRangeAdvice($description);
@@ -54,11 +61,14 @@ class WideRangeController extends AbstractController
 
                     // Check if the land's center is inside the drawn polygon
                     if ($this->isPointInPolygon($latitude, $longitude, $polygon)) {
+                        
+                        $this->AdviceService->InsertWideRangeAdvice($user['UserId'] ,$land['LandId'] , $advice , $description , $affectedArea);
+                        
                         $usersInArea[] = [
                             'UserName' => $user['Name'],
                             'UserId' => $user['UserId'],                            
-                            'FarmName' => $farm['FarmId'],
-                            'LandName' => $land['LandId'],
+                            'FarmId' => $farm['FarmId'],
+                            'LandId' => $land['LandId'],
                             'Latitude' => $latitude,
                             'Longitude' => $longitude,
                         ];
@@ -72,6 +82,15 @@ class WideRangeController extends AbstractController
             'usersInArea' => $usersInArea
         ]);
     }
+
+
+    #[Route('/get-advices', methods: ['GET'])]
+    public function GetAdvice(): JsonResponse{
+        $advices = $this->WideRangeRepo->findAll();
+
+        return $this->json($advices);
+    }
+
 
     private function convertGeoJSONToPolygon($geometry): array
     {
