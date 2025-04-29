@@ -4,9 +4,10 @@ namespace App\Controller;
 use App\Entity\Land;
 use App\Service\AdviceService;
 use App\Repository\LandRepository;
-use App\Repository\WideRangeAdviceRepository;
 use App\Service\CurrentWeatherService;
 use App\Service\AdviceGenerationService;
+use App\Service\SendNotificationService;
+use App\Repository\WideRangeAdviceRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,20 +22,22 @@ class WideRangeController extends AbstractController
     private AdviceGenerationService $GenerateAdvice;
     private AdviceService $AdviceService;
     private WideRangeAdviceRepository $WideRangeRepo;
+    private SendNotificationService $notif;
 
-    public function __construct(CurrentWeatherService $CurrAdvice , AdviceGenerationService $GenerateAdvice , AdviceService $AdviceService,WideRangeAdviceRepository $WideRangeRepo)
+    public function __construct(CurrentWeatherService $CurrAdvice , AdviceGenerationService $GenerateAdvice , 
+        AdviceService $AdviceService,WideRangeAdviceRepository $WideRangeRepo , SendNotificationService $notif )
     {
         $this->CurrAdvice = $CurrAdvice;
         $this->GenerateAdvice = $GenerateAdvice;
         $this->AdviceService = $AdviceService;
         $this->WideRangeRepo = $WideRangeRepo;
+        $this->notif = $notif;
     }
 
 
     #[Route('/check-lands', methods: ['POST'])]
     public function checkWeather(Request $request): JsonResponse
     {
-
         $data = json_decode($request->getContent(), true);
         $geometry = $data['geometry'];
         $description = $data['description'];
@@ -43,43 +46,45 @@ class WideRangeController extends AbstractController
         //generate advice
         $advice = $this->GenerateAdvice->GenerateWideRangeAdvice($description);
 
+        $this->notif->sendEmail($advice , $description);
+        $this->notif->sendSms($advice , $description);
+
         //get data from cache
-        $weatherData = $this->CurrAdvice->getWeatherAllCache();
+        // $weatherData = $this->CurrAdvice->getWeatherAllCache();
 
-        $polygon = $this->convertGeoJSONToPolygon($geometry);
+        // $polygon = $this->convertGeoJSONToPolygon($geometry);
 
-        //loop through users' lands to check
-        $usersInArea = [];
+        // //loop through users' lands to check
+        // $usersInArea = [];
         
-        foreach ($weatherData['Users'] as $user) {
-            foreach ($user['Farms'] as $farm) {
-                foreach ($farm['Lands'] as $land) {
+        // foreach ($weatherData['Users'] as $user) {
+        //     foreach ($user['Farms'] as $farm) {
+        //         foreach ($farm['Lands'] as $land) {
                     
-                    // Get lat and long of land
-                    $latitude = $land['CenterX'];
-                    $longitude = $land['CenterY'];
+        //             // Get lat and long of land
+        //             $latitude = $land['CenterX'];
+        //             $longitude = $land['CenterY'];
 
-                    // Check if the land's center is inside the drawn polygon
-                    if ($this->isPointInPolygon($latitude, $longitude, $polygon)) {
+        //             // Check if the land's center is inside the drawn polygon
+        //             if ($this->isPointInPolygon($latitude, $longitude, $polygon)) {
                         
-                        $this->AdviceService->InsertWideRangeAdvice($user['UserId'] ,$land['LandId'] , $advice , $description , $affectedArea);
+        //                 $this->AdviceService->InsertWideRangeAdvice($user['UserId'] ,$land['LandId'] , $advice , $description , $affectedArea);
                         
-                        $usersInArea[] = [
-                            'UserName' => $user['Name'],
-                            'UserId' => $user['UserId'],                            
-                            'FarmId' => $farm['FarmId'],
-                            'LandId' => $land['LandId'],
-                            'Latitude' => $latitude,
-                            'Longitude' => $longitude,
-                        ];
-                    }
-                }
-            }
-        }
+        //                 $usersInArea[] = [
+        //                     'UserName' => $user['Name'],
+        //                     'UserId' => $user['UserId'],                            
+        //                     'FarmId' => $farm['FarmId'],
+        //                     'LandId' => $land['LandId'],
+        //                     'Latitude' => $latitude,
+        //                     'Longitude' => $longitude,
+        //                 ];
+        //             }
+        //         }
+        //     }
+        // }
 
         return new JsonResponse([
-            'advice' => $advice,
-            'usersInArea' => $usersInArea
+            'advice' => $advice
         ]);
     }
 
