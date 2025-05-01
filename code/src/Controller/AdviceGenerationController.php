@@ -125,7 +125,9 @@ final class AdviceGenerationController extends AbstractController
     {
         // * //////////////// this is the code that should be used  ! /////////////////////
             // Fetch weather data for the user
-            $weatherData = $this->CurrAdvice->getWeatherAllCache();           
+            $weatherData = $this->CurrAdvice->getWeatherAllCache();  
+            
+            // dd($weatherData);
 
             if (!$weatherData) {
                 return new JsonResponse(['error' => 'Failed to fetch weather data'], JsonResponse::HTTP_BAD_REQUEST);
@@ -151,6 +153,7 @@ final class AdviceGenerationController extends AbstractController
         
         // dd(json_decode($advice->getContent(), true));
 
+
         return $this->json([
             'User' => $userId,
             'Farm' => $farmId,
@@ -174,12 +177,22 @@ final class AdviceGenerationController extends AbstractController
     public function GenerateGeneralAdvice(string $plant): JsonResponse
     {
         $GeneratedAdvice = $this->adviceGeneration->GenerateGeneralAdvice($plant);
+        sleep(5);
+        $insertedAdvice = $this->AdviceService->InsertGeneralAdvice($plant , $GeneratedAdvice);
 
-        $this->AdviceService->InsertGeneralAdvice($plant , $GeneratedAdvice);
+        $advice = json_decode($insertedAdvice->getContent(), true);
+
+        // dd($advice);
 
         return $this->json([
             'Plant'=> $plant,
-            'GeneratedAdvice'=> $GeneratedAdvice
+            'adviceTextEn'=> $advice['adviceTextEn'],
+            'adviceTextAr'=> $advice['adviceTextAr'],
+            'adviceTextFr'=> $advice['adviceTextFr'],
+            'audioPathEn'=> $advice['audioPathEn'],
+            'audioPathAr'=> $advice['audioPathAr'],
+            'audioPathFr'=> $advice['audioPathFr'],
+            'createdAt'=> $advice['createdAt']
         ]);
     }
 }

@@ -52,6 +52,7 @@ class AdviceService {
     
             //? translation
             $translatedDarija = $this->translator->translateToDarija($AdviceText);
+            sleep(5);
             $translatedFrench = $this->translator->translateToFrench($AdviceText);
             
             $GeneralAdvice->setAdviceTextEn($AdviceText);
@@ -73,9 +74,9 @@ class AdviceService {
         $plantId = $this->PlantRepo->findIdByName($plantName);        
         $plant = $this->em->getRepository(Plants::class)->find($plantId);
 
-        if (!$plantId) {
-            return new JsonResponse(['error' => 'Invalid plant_id'], Response::HTTP_BAD_REQUEST);
-        }
+        // if (!$plantId) {
+        //     return new JsonResponse(['error' => 'Invalid plant_id'], Response::HTTP_BAD_REQUEST);
+        // }
 
         //? Associate the plant
         $GeneralAdvice->setPlant($plant);
@@ -90,8 +91,18 @@ class AdviceService {
         $this->em->persist($GeneralAdvice);
         $this->em->flush();
 
+        // dd($GeneralAdvice);
 
-        return new JsonResponse($GeneralAdvice, Response::HTTP_OK);
+        return new JsonResponse([
+            'id' => $GeneralAdvice->getId(),
+            'adviceTextEn' => $GeneralAdvice->getAdviceTextEn(),
+            'adviceTextAr' => $GeneralAdvice->getAdviceTextAr(),
+            'adviceTextFr' => $GeneralAdvice->getAdviceTextFr(),
+            'audioPathEn' => $GeneralAdvice->getAudioPathEn(),
+            'audioPathAr' => $GeneralAdvice->getAudioPathAr(),
+            'audioPathFr' => $GeneralAdvice->getAudioPathFr(),
+            'createdAt' => $GeneralAdvice->getCreatedAt()->format('Y-m-d H:i:s'),
+        ], Response::HTTP_OK);
     }
 
 
@@ -145,9 +156,9 @@ class AdviceService {
         $plantId = $this->PlantRepo->findIdByName($plantName);        
         $plant = $this->em->getRepository(Plants::class)->find($plantId);
 
-        if (!$plantId) {
-            return new JsonResponse(['error' => 'Invalid plant_id'], Response::HTTP_BAD_REQUEST);
-        }
+        // if (!$plantId) {
+        //     return new JsonResponse(['error' => 'Invalid plant_id'], Response::HTTP_BAD_REQUEST);
+        // }
 
         //? Associate the LandPlant entity with the Advice entity
         $advice->setLand($land);
@@ -244,9 +255,9 @@ class AdviceService {
         $plantId = $this->PlantRepo->findIdByName($plantName);        
         $plant = $this->em->getRepository(Plants::class)->find($plantId);
 
-        if (!$plantId) {
-            return new JsonResponse(['error' => 'Invalid plant_id'], Response::HTTP_BAD_REQUEST);
-        }
+        // if (!$plantId) {
+        //     return new JsonResponse(['error' => 'Invalid plant_id'], Response::HTTP_BAD_REQUEST);
+        // }
 
         //? Associate the LandPlant entity with the Advice entity
         $advice->setLand($land);
@@ -301,7 +312,7 @@ class AdviceService {
             
             //? translation
             $translatedDarija = $this->translator->translateToDarija($AdviceText);
-            sleep(5);
+            sleep(15);
             $translatedFrench = $this->translator->translateToFrench($AdviceText);
             
             $advice->setAdviceTextEn($AdviceText);

@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Interface\AdviceGenerationServiceInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 
 class AdviceGenerationService implements AdviceGenerationServiceInterface
 {
@@ -15,7 +16,6 @@ class AdviceGenerationService implements AdviceGenerationServiceInterface
     {
         $this->client = $client;
         $this->currWeatherService = $currWeatherService;
-        $this->apiKey = $_ENV['OPENAI_API_KEY']; 
     }
 
 
@@ -23,10 +23,14 @@ class AdviceGenerationService implements AdviceGenerationServiceInterface
     {
 
         $prompt = "You are an expert agricultural advisor. A weather change is going to hit the land: '$description'. Based on this change, provide a short and direct farming advice for the farmer, like 'A high-speed wind will hit your land, better cover them.' Make sure the advice is actionable and to the point, and always start by saying 'Warning : A {put the weather change from description here}' then give the advice";
+        
+        // dd($_ENV['OPENAI_API_KEY']);
+
+        try{
 
         $response = $this->client->request('POST', $_ENV['OPENAI_API_URL'], [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Authorization' => 'Bearer ' . $_ENV['OPENAI_API_KEY'],
                 'Content-Type' => 'application/json',
             ],
             'json' => [
@@ -40,6 +44,13 @@ class AdviceGenerationService implements AdviceGenerationServiceInterface
 
         $data = $response->toArray();
         return $data['choices'][0]['message']['content'] ?? 'Generation failed';
+
+    } catch (ClientExceptionInterface $e) {
+        // Parse the error response
+        $errorContent = $e->getResponse()->getContent(false); // don't throw again
+        $errorData = json_decode($errorContent, true);
+        return $errorData['error']['message'] ?? 'API Error';
+    }
     }
 
 
@@ -48,10 +59,12 @@ class AdviceGenerationService implements AdviceGenerationServiceInterface
     {
         $prompt = "You are an expert agricultural advisor.
             Provide a farming advice on how to care for the plant **$plant** in generale,keep it short, clear and direct and in one sentence ";
+        
+            // dd($_ENV['OPENAI_API_KEY']);
 
         $response = $this->client->request('POST', $_ENV['OPENAI_API_URL'], [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Authorization' => 'Bearer ' . $_ENV['OPENAI_API_KEY'],
                 'Content-Type' => 'application/json',
             ],
             'json' => [
@@ -85,7 +98,7 @@ class AdviceGenerationService implements AdviceGenerationServiceInterface
 
         $response = $this->client->request('POST', $_ENV['OPENAI_API_URL'], [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Authorization' => 'Bearer ' . $_ENV['OPENAI_API_KEY'],
                 'Content-Type' => 'application/json',
             ],
             'json' => [
@@ -120,7 +133,7 @@ class AdviceGenerationService implements AdviceGenerationServiceInterface
 
         $response = $this->client->request('POST', $_ENV['OPENAI_API_URL'], [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Authorization' => 'Bearer ' . $_ENV['OPENAI_API_KEY'],
                 'Content-Type' => 'application/json',
             ],
             'json' => [
@@ -174,33 +187,33 @@ class AdviceGenerationService implements AdviceGenerationServiceInterface
     public function filterWeatherByUserFarmLand(array $weatherData, ?string $userId = null, ?string $farmId = null, ?string $landId = null): array
     {
 
-        if (!isset($weatherData['Users'])) {
+        if (!isset($weatherData['users'])) {
             return [];
         }
 
-        foreach ($weatherData['Users'] as $user) {
+        foreach ($weatherData['users'] as $user) {
             // Filter by user ID if provided
-            if ($userId !== null && $user['UserId'] != $userId) {
+            if ($userId !== null && $user['userId'] != $userId) {
                 continue;
             }
 
-            foreach ($user['Farms'] as $farm) {
+            foreach ($user['farms'] as $farm) {
                 // Filter by farm ID if provided
-                if ($farmId !== null && $farm['FarmId'] != $farmId) {
+                if ($farmId !== null && $farm['farmId'] != $farmId) {
                     continue;
                 }
 
-                foreach ($farm['Lands'] as $land) {
+                foreach ($farm['lands'] as $land) {
                     // Filter by land ID if provided
-                    if ($landId !== null && $land['LandId'] != $landId) {
+                    if ($landId !== null && $land['landId'] != $landId) {
                         continue;
                     }
 
-                    if (!isset($land['Meteo'])) {
+                    if (!isset($land['weather'])) {
                         continue;
                     }
 
-                    $meteoData = $land['Meteo'];
+                    $meteoData = $land['weather'];
 
                     $currentTimeIndex = $this->currWeatherService->getCurrentTimeIndex($meteoData['hourly']);
                     // dd($currentTimeIndex);
@@ -222,34 +235,34 @@ class AdviceGenerationService implements AdviceGenerationServiceInterface
     public function filterWeatherByUserFarmLandWeekly(array $weatherData, ?string $userId = null, ?string $farmId = null, ?string $landId = null): array
     {
 
-        if (!isset($weatherData['Users'])) {
+        if (!isset($weatherData['users'])) {
             return [];
         }
 
-        foreach ($weatherData['Users'] as $user) {
+        foreach ($weatherData['users'] as $user) {
             // Filter by user ID if provided
-            if ($userId !== null && $user['UserId'] != $userId) {
+            if ($userId !== null && $user['userId'] != $userId) {
                 continue;
             }
 
-            foreach ($user['Farms'] as $farm) {
+            foreach ($user['farms'] as $farm) {
                 // Filter by farm ID if provided
-                if ($farmId !== null && $farm['FarmId'] != $farmId) {
+                if ($farmId !== null && $farm['farmId'] != $farmId) {
                     continue;
                 }
 
-                foreach ($farm['Lands'] as $land) {
+                foreach ($farm['lands'] as $land) {
                     // Filter by land ID if provided
-                    if ($landId !== null && $land['LandId'] != $landId) {
+                    if ($landId !== null && $land['landId'] != $landId) {
                         continue;
                     }
 
-                    if (!isset($land['Meteo'])) {
+                    if (!isset($land['weather'])) {
                         continue;
                     }
 
-                    $meteoData = $land['Meteo'];
-                    $plantId = $land['PlantId'];
+                    $meteoData = $land['weather'];
+                    $plantId = $land['plantId'];
                 }
             }
         }

@@ -41,50 +41,51 @@ class WideRangeController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $geometry = $data['geometry'];
         $description = $data['description'];
-        $affectedArea = $data['affectedArea'];
+        $affectedArea = 'Oujda, Angad';
 
         //generate advice
         $advice = $this->GenerateAdvice->GenerateWideRangeAdvice($description);
 
         $this->notif->sendEmail($advice , $description);
-        $this->notif->sendSms($advice , $description);
+        // $this->notif->sendSms($advice , $description);
 
         //get data from cache
-        // $weatherData = $this->CurrAdvice->getWeatherAllCache();
+        $weatherData = $this->CurrAdvice->getWeatherAllCache();
 
-        // $polygon = $this->convertGeoJSONToPolygon($geometry);
+        $polygon = $this->convertGeoJSONToPolygon($geometry);
 
-        // //loop through users' lands to check
-        // $usersInArea = [];
+        //loop through users' lands to check
+        $usersInArea = [];
         
-        // foreach ($weatherData['Users'] as $user) {
-        //     foreach ($user['Farms'] as $farm) {
-        //         foreach ($farm['Lands'] as $land) {
+        foreach ($weatherData['users'] as $user) {
+            foreach ($user['farms'] as $farm) {
+                foreach ($farm['lands'] as $land) {
                     
-        //             // Get lat and long of land
-        //             $latitude = $land['CenterX'];
-        //             $longitude = $land['CenterY'];
+                    // Get lat and long of land
+                    $latitude = $land['centerY'];
+                    $longitude = $land['centerX'];
 
-        //             // Check if the land's center is inside the drawn polygon
-        //             if ($this->isPointInPolygon($latitude, $longitude, $polygon)) {
+                    // Check if the land's center is inside the drawn polygon
+                    if ($this->isPointInPolygon($latitude, $longitude, $polygon)) {
+                        sleep(30);
+                        $this->AdviceService->InsertWideRangeAdvice($user['userId'] , $land['landId'] , $advice , $description , $affectedArea);
                         
-        //                 $this->AdviceService->InsertWideRangeAdvice($user['UserId'] ,$land['LandId'] , $advice , $description , $affectedArea);
-                        
-        //                 $usersInArea[] = [
-        //                     'UserName' => $user['Name'],
-        //                     'UserId' => $user['UserId'],                            
-        //                     'FarmId' => $farm['FarmId'],
-        //                     'LandId' => $land['LandId'],
-        //                     'Latitude' => $latitude,
-        //                     'Longitude' => $longitude,
-        //                 ];
-        //             }
-        //         }
-        //     }
-        // }
+                        $usersInArea[] = [
+                            'UserName' => $user['name'],
+                            'UserId' => $user['userId'],                            
+                            'FarmId' => $farm['farmId'],
+                            'LandId' => $land['landId'],
+                            'Latitude' => $latitude,
+                            'Longitude' => $longitude,
+                        ];
+                    }
+                }
+            }
+        }
 
         return new JsonResponse([
-            'advice' => $advice
+            'advice' => $advice,
+            'AffectedUsers'=>$usersInArea
         ]);
     }
 
